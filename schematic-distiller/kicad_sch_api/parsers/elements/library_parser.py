@@ -5,11 +5,13 @@ Handles parsing and serialization of Symbol library definitions.
 """
 
 import logging
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import sexpdata
 
 from ..base import BaseElementParser
+from ...library.cache import SymbolDefinition, get_symbol_cache
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +25,66 @@ class LibraryParser(BaseElementParser):
 
     def _parse_lib_symbols(self, item: List[Any]) -> Dict[str, Any]:
         """Parse lib_symbols section."""
-        # Implementation for lib_symbols parsing
-        return {}
+        if not item or item[0] != sexpdata.Symbol("lib_symbols"):
+            return {}
+
+        cache = get_symbol_cache()
+        lib_symbols: Dict[str, Any] = {}
+
+        for symbol_item in item[1:]:
+            if not (isinstance(symbol_item, list) and symbol_item and symbol_item[0] == sexpdata.Symbol("symbol")):
+                continue
+
+            # lib_id is the second element: e.g., "CustomParts:TSC2003IPWR"
+            lib_id = str(symbol_item[1]).strip('"')
+            lib_symbols[lib_id] = symbol_item
+
+            try:
+                library_name, symbol_name = lib_id.split(":", 1)
+            except ValueError:
+                logger.warning(f"Skipping lib_id without library prefix: {lib_id}")
+                continue
+
+            # Gather properties (value/description/datasheet) and their positions if present
+            properties: Dict[str, str] = {}
+            property_positions: Dict[str, tuple] = {}
+            for sub in symbol_item[2:]:
+                if isinstance(sub, list) and sub and sub[0] == sexpdata.Symbol("property") and len(sub) >= 3:
+                    prop_name = str(sub[1]).strip('"')
+                    prop_value = str(sub[2]).strip('"')
+                    properties[prop_name] = prop_value
+
+                    pos = cache._extract_property_position(sub)  # type: ignore[attr-defined]
+                    if pos:
+                        property_positions[prop_name] = pos
+
+            # Extract pins and unit count from the inline symbol definition
+            pins = cache._extract_pins_from_symbol(symbol_item)  # type: ignore[attr-defined]
+            unit_count = cache._count_symbol_units(symbol_item)  # type: ignore[attr-defined]
+            reference_prefix = cache._guess_reference_prefix(symbol_name)  # type: ignore[attr-defined]
+
+            symbol_def = SymbolDefinition(
+                lib_id=lib_id,
+                name=symbol_name,
+                library=library_name,
+                reference_prefix=reference_prefix,
+                description=properties.get("Description", ""),
+                datasheet=properties.get("Datasheet", properties.get("datasheet", "")),
+                pins=pins,
+                units=unit_count,
+                property_positions=property_positions,
+                raw_kicad_data=symbol_item,
+            )
+
+            # Register the inline symbol with the global cache so downstream pin lookups work
+            cache._symbols[lib_id] = symbol_def  # type: ignore[attr-defined]
+            cache._symbol_index[symbol_name] = lib_id  # type: ignore[attr-defined]
+            if library_name not in cache._library_index:  # type: ignore[attr-defined]
+                inline_path = Path(f"<inline:{library_name}>")
+                cache._library_index[library_name] = inline_path  # type: ignore[attr-defined]
+                cache._library_paths.add(inline_path)  # type: ignore[attr-defined]
+
+        return lib_symbols
 
     # Conversion methods from internal format to S-expression
 

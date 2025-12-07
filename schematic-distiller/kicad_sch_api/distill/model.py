@@ -10,11 +10,11 @@ class DistilledPin:
     name: Optional[str] = None
 
     def to_dict(self) -> Dict:
+        # Pins are serialized without positions; only logical connectivity is needed in output.
         return {
             "number": self.number,
             "name": self.name,
             "net": self.net,
-            "position": {"x": self.position[0], "y": self.position[1]},
         }
 
 

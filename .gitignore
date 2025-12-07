@@ -48,9 +48,5 @@ build/
 dist/
 
 /schematic-distiller/agents
-/schematic-distiller/kicad-sexpression-docs
 *.zip
 *.lock
-/schematic-distiller/tests/reference_tests
-/schematic-distiller/tests/reference_kicad_projects
-/schematic-distiller/tests/fixtures

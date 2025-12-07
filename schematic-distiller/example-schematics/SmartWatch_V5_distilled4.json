@@ -27,197 +27,353 @@
         {
           "number": "3",
           "name": "EN",
-          "net": "EN"
+          "net": "EN",
+          "position": {
+            "x": 171.45,
+            "y": 36.83
+          }
         },
         {
           "number": "4",
           "name": "SENSOR_VP",
-          "net": "REG_PG"
+          "net": "REG_PG",
+          "position": {
+            "x": 171.45,
+            "y": 41.910000000000004
+          }
         },
         {
           "number": "5",
           "name": "SENSOR_VN",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 171.45,
+            "y": 44.45
+          }
         },
         {
           "number": "21",
           "name": "SDO/SD0",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 171.45,
+            "y": 67.31
+          }
         },
         {
           "number": "22",
           "name": "SDI/SD1",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 171.45,
+            "y": 69.85000000000001
+          }
         },
         {
           "number": "17",
           "name": "SHD/SD2",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 171.45,
+            "y": 72.39
+          }
         },
         {
           "number": "18",
           "name": "SWP/SD3",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 171.45,
+            "y": 74.93
+          }
         },
         {
           "number": "20",
           "name": "SCK/CLK",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 171.45,
+            "y": 77.47
+          }
         },
         {
           "number": "19",
           "name": "SCS/CMD",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 171.45,
+            "y": 80.01
+          }
         },
         {
           "number": "32",
           "name": "NC",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 173.99,
+            "y": 95.25
+          }
         },
         {
           "number": "2",
           "name": "VDD",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 186.69,
+            "y": 31.75
+          }
         },
         {
           "number": "1",
           "name": "GND",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 186.69,
+            "y": 102.87
+          }
         },
         {
           "number": "15",
           "name": "GND",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 186.69,
+            "y": 102.87
+          }
         },
         {
           "number": "38",
           "name": "GND",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 186.69,
+            "y": 102.87
+          }
         },
         {
           "number": "39",
           "name": "GND",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 186.69,
+            "y": 102.87
+          }
         },
         {
           "number": "25",
           "name": "IO0",
-          "net": "IO0"
+          "net": "IO0",
+          "position": {
+            "x": 201.93,
+            "y": 36.83
+          }
         },
         {
           "number": "35",
           "name": "TXD0/IO1",
-          "net": "RXD"
+          "net": "RXD",
+          "position": {
+            "x": 201.93,
+            "y": 39.370000000000005
+          }
         },
         {
           "number": "24",
           "name": "IO2",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 201.93,
+            "y": 41.910000000000004
+          }
         },
         {
           "number": "34",
           "name": "RXD0/IO3",
-          "net": "TXD"
+          "net": "TXD",
+          "position": {
+            "x": 201.93,
+            "y": 44.45
+          }
         },
         {
           "number": "26",
           "name": "IO4",
-          "net": "TOUCH_IRQ"
+          "net": "TOUCH_IRQ",
+          "position": {
+            "x": 201.93,
+            "y": 46.99
+          }
         },
         {
           "number": "29",
           "name": "IO5",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 201.93,
+            "y": 49.53
+          }
         },
         {
           "number": "14",
           "name": "IO12",
-          "net": "IO12"
+          "net": "IO12",
+          "position": {
+            "x": 201.93,
+            "y": 52.07
+          }
         },
         {
           "number": "16",
           "name": "IO13",
-          "net": "LCD_EN"
+          "net": "LCD_EN",
+          "position": {
+            "x": 201.93,
+            "y": 54.61
+          }
         },
         {
           "number": "13",
           "name": "IO14",
-          "net": "LCD_LED"
+          "net": "LCD_LED",
+          "position": {
+            "x": 201.93,
+            "y": 57.150000000000006
+          }
         },
         {
           "number": "23",
           "name": "IO15",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 201.93,
+            "y": 59.690000000000005
+          }
         },
         {
           "number": "27",
           "name": "IO16",
-          "net": "LCD_CS"
+          "net": "LCD_CS",
+          "position": {
+            "x": 201.93,
+            "y": 62.230000000000004
+          }
         },
         {
           "number": "28",
           "name": "IO17",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 201.93,
+            "y": 64.77
+          }
         },
         {
           "number": "30",
           "name": "IO18",
-          "net": "LCD_SCK"
+          "net": "LCD_SCK",
+          "position": {
+            "x": 201.93,
+            "y": 67.31
+          }
         },
         {
           "number": "31",
           "name": "IO19",
-          "net": "BAT_ALRT"
+          "net": "BAT_ALRT",
+          "position": {
+            "x": 201.93,
+            "y": 69.85000000000001
+          }
         },
         {
           "number": "33",
           "name": "IO21",
-          "net": "LCD_A0"
+          "net": "LCD_A0",
+          "position": {
+            "x": 201.93,
+            "y": 72.39
+          }
         },
         {
           "number": "36",
           "name": "IO22",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 201.93,
+            "y": 74.93
+          }
         },
         {
           "number": "37",
           "name": "IO23",
-          "net": "LCD_MOSI"
+          "net": "LCD_MOSI",
+          "position": {
+            "x": 201.93,
+            "y": 77.47
+          }
         },
         {
           "number": "10",
           "name": "IO25",
-          "net": "Z_ACCEL"
+          "net": "Z_ACCEL",
+          "position": {
+            "x": 201.93,
+            "y": 80.01
+          }
         },
         {
           "number": "11",
           "name": "IO26",
-          "net": "X_ACCEL"
+          "net": "X_ACCEL",
+          "position": {
+            "x": 201.93,
+            "y": 82.55
+          }
         },
         {
           "number": "12",
           "name": "IO27",
-          "net": "Y_ACCEL"
+          "net": "Y_ACCEL",
+          "position": {
+            "x": 201.93,
+            "y": 85.09
+          }
         },
         {
           "number": "8",
           "name": "IO32",
-          "net": "I2C_SCL"
+          "net": "I2C_SCL",
+          "position": {
+            "x": 201.93,
+            "y": 87.63
+          }
         },
         {
           "number": "9",
           "name": "IO33",
-          "net": "I2C_SDA"
+          "net": "I2C_SDA",
+          "position": {
+            "x": 201.93,
+            "y": 90.17
+          }
         },
         {
           "number": "6",
           "name": "IO34",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 201.93,
+            "y": 92.71000000000001
+          }
         },
         {
           "number": "7",
           "name": "IO35",
-          "net": "CHG_STAT"
+          "net": "CHG_STAT",
+          "position": {
+            "x": 201.93,
+            "y": 95.25
+          }
         }
       ]
     },
@@ -243,23 +399,7 @@
         "Power": "250mW"
       },
       "category": "ic",
-      "pins": [
-        {
-          "number": "1",
-          "name": "B",
-          "net": "Net-(R9-Pad2)"
-        },
-        {
-          "number": "3",
-          "name": "C",
-          "net": "Net-(Q2-Pad3)"
-        },
-        {
-          "number": "2",
-          "name": "E",
-          "net": "Net-(Q2-Pad2)"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "J1",
@@ -287,32 +427,56 @@
         {
           "number": "6",
           "name": "Shield",
-          "net": "Net-(J1-Pad6)"
+          "net": "Net-(J1-Pad6)",
+          "position": {
+            "x": 17.78,
+            "y": 162.56
+          }
         },
         {
           "number": "5",
           "name": "GND",
-          "net": "Net-(J1-Pad5)"
+          "net": "Net-(J1-Pad5)",
+          "position": {
+            "x": 20.32,
+            "y": 162.56
+          }
         },
         {
           "number": "1",
           "name": "VBUS",
-          "net": "VBUS"
+          "net": "VBUS",
+          "position": {
+            "x": 27.94,
+            "y": 147.32
+          }
         },
         {
           "number": "3",
           "name": "D+",
-          "net": "Net-(R3-Pad2)"
+          "net": "Net-(D2-Pad2)",
+          "position": {
+            "x": 27.94,
+            "y": 152.4
+          }
         },
         {
           "number": "2",
           "name": "D-",
-          "net": "Net-(J1-Pad2)"
+          "net": "Net-(J1-Pad2)",
+          "position": {
+            "x": 27.94,
+            "y": 154.94
+          }
         },
         {
           "number": "4",
           "name": "ID",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 27.94,
+            "y": 157.48000000000002
+          }
         }
       ]
     },
@@ -342,12 +506,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "Net-(R2-Pad1)"
+          "net": "Net-(U2-Pad9)",
+          "position": {
+            "x": 58.42,
+            "y": 149.86
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "Net-(D3-Pad2)"
+          "net": "Net-(R2-Pad2)",
+          "position": {
+            "x": 50.8,
+            "y": 149.86
+          }
         }
       ]
     },
@@ -373,23 +545,7 @@
         "Operating Temperature": "-55\u00b0C ~ 150\u00b0C (TJ)"
       },
       "category": "ic",
-      "pins": [
-        {
-          "number": "1",
-          "name": "G",
-          "net": "VBUS"
-        },
-        {
-          "number": "3",
-          "name": "D",
-          "net": "Net-(Q1-Pad3)"
-        },
-        {
-          "number": "2",
-          "name": "S",
-          "net": "Net-(Q1-Pad2)"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "D1",
@@ -416,12 +572,20 @@
         {
           "number": "1",
           "name": "K",
-          "net": "Net-(D1-Pad1)"
+          "net": "Net-(D1-Pad1)",
+          "position": {
+            "x": 57.150000000000006,
+            "y": 39.37
+          }
         },
         {
           "number": "2",
           "name": "A",
-          "net": "VBUS"
+          "net": "VBUS",
+          "position": {
+            "x": 49.53,
+            "y": 39.37
+          }
         }
       ]
     },
@@ -449,12 +613,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "VBUS"
+          "net": "VBUS",
+          "position": {
+            "x": 44.45,
+            "y": 43.18
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "GND"
+          "net": "GND",
+          "position": {
+            "x": 44.45,
+            "y": 50.800000000000004
+          }
         }
       ]
     },
@@ -478,38 +650,7 @@
         "Operating Temperature": "-40\u00b0C ~ 125\u00b0C (TJ)"
       },
       "category": "ic",
-      "pins": [
-        {
-          "number": "6",
-          "name": "VIN",
-          "net": "Net-(Q1-Pad2)"
-        },
-        {
-          "number": "4",
-          "name": "EN",
-          "net": "Net-(U3-Pad4)"
-        },
-        {
-          "number": "7",
-          "name": "PAD",
-          "net": "Net-(U3-Pad7)"
-        },
-        {
-          "number": "5",
-          "name": "GND",
-          "net": "Net-(U3-Pad5)"
-        },
-        {
-          "number": "3",
-          "name": "PG~{}",
-          "net": "REG_PG"
-        },
-        {
-          "number": "1",
-          "name": "VOUT",
-          "net": "+3.3V"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "C2",
@@ -538,12 +679,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "Net-(Q1-Pad2)"
+          "net": "Net-(C6-Pad1)",
+          "position": {
+            "x": 68.58,
+            "y": 33.019999999999996
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 68.58,
+            "y": 40.64
+          }
         }
       ]
     },
@@ -564,13 +713,7 @@
         "Description": ""
       },
       "category": "other",
-      "pins": [
-        {
-          "number": "1",
-          "name": "~",
-          "net": "BAT+"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "J10",
@@ -589,13 +732,7 @@
         "Description": ""
       },
       "category": "other",
-      "pins": [
-        {
-          "number": "1",
-          "name": "~",
-          "net": "GND"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "J9",
@@ -614,13 +751,7 @@
         "Description": ""
       },
       "category": "other",
-      "pins": [
-        {
-          "number": "1",
-          "name": "~",
-          "net": "+3.3V"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "U5",
@@ -648,27 +779,47 @@
         {
           "number": "5",
           "name": "PROG",
-          "net": "Net-(R6-Pad2)"
+          "net": "Net-(R6-Pad2)",
+          "position": {
+            "x": 88.9,
+            "y": 64.77
+          }
         },
         {
           "number": "4",
           "name": "V_{DD}",
-          "net": "Net-(U5-Pad4)"
+          "net": "Net-(U5-Pad4)",
+          "position": {
+            "x": 99.06,
+            "y": 54.61
+          }
         },
         {
           "number": "2",
           "name": "V_{SS}",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 99.06,
+            "y": 69.85
+          }
         },
         {
           "number": "3",
           "name": "V_{BAT}",
-          "net": "BAT_SENSE"
+          "net": "BAT_SENSE",
+          "position": {
+            "x": 109.22,
+            "y": 59.69
+          }
         },
         {
           "number": "1",
           "name": "STAT",
-          "net": "CHG_STAT"
+          "net": "CHG_STAT",
+          "position": {
+            "x": 109.22,
+            "y": 64.77
+          }
         }
       ]
     },
@@ -698,12 +849,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "GND"
+          "net": "GND",
+          "position": {
+            "x": 83.82,
+            "y": 72.39
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "Net-(R6-Pad2)"
+          "net": "Net-(R6-Pad2)",
+          "position": {
+            "x": 83.82,
+            "y": 64.77
+          }
         }
       ]
     },
@@ -732,107 +891,191 @@
         {
           "number": "10",
           "name": "3V3OUT",
-          "net": "Net-(U2-Pad10)"
+          "net": "Net-(U2-Pad11)",
+          "position": {
+            "x": 68.58,
+            "y": 142.23999999999998
+          }
         },
         {
           "number": "9",
           "name": "USBDM",
-          "net": "Net-(R2-Pad1)"
+          "net": "Net-(U2-Pad9)",
+          "position": {
+            "x": 68.58,
+            "y": 149.85999999999999
+          }
         },
         {
           "number": "8",
           "name": "USBDP",
-          "net": "Net-(R3-Pad1)"
+          "net": "Net-(U2-Pad8)",
+          "position": {
+            "x": 68.58,
+            "y": 152.39999999999998
+          }
         },
         {
           "number": "11",
           "name": "~{RESET}",
-          "net": "Net-(U2-Pad10)"
+          "net": "Net-(U2-Pad11)",
+          "position": {
+            "x": 68.58,
+            "y": 157.48
+          }
         },
         {
           "number": "12",
           "name": "VCC",
-          "net": "+3.3V"
+          "net": "+3.3V",
+          "position": {
+            "x": 83.82,
+            "y": 134.62
+          }
         },
         {
           "number": "3",
           "name": "GND",
-          "net": "Net-(U2-Pad3)"
+          "net": "Net-(U2-Pad3)",
+          "position": {
+            "x": 83.82,
+            "y": 180.33999999999997
+          }
         },
         {
           "number": "13",
           "name": "GND",
-          "net": "GND"
+          "net": "GND",
+          "position": {
+            "x": 86.36,
+            "y": 180.33999999999997
+          }
         },
         {
           "number": "20",
           "name": "VCCIO",
-          "net": "Net-(U2-Pad20)"
+          "net": "Net-(U2-Pad20)",
+          "position": {
+            "x": 88.9,
+            "y": 134.62
+          }
         },
         {
           "number": "21",
           "name": "GND",
-          "net": "Net-(U2-Pad21)"
+          "net": "Net-(U2-Pad21)",
+          "position": {
+            "x": 88.9,
+            "y": 180.33999999999997
+          }
         },
         {
           "number": "17",
           "name": "TXD",
-          "net": "TXD"
+          "net": "TXD",
+          "position": {
+            "x": 104.14,
+            "y": 142.23999999999998
+          }
         },
         {
           "number": "1",
           "name": "RXD",
-          "net": "RXD"
+          "net": "RXD",
+          "position": {
+            "x": 104.14,
+            "y": 144.78
+          }
         },
         {
           "number": "19",
           "name": "~{RTS}",
-          "net": "RTS"
+          "net": "RTS",
+          "position": {
+            "x": 104.14,
+            "y": 147.32
+          }
         },
         {
           "number": "6",
           "name": "~{CTS}",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 104.14,
+            "y": 149.85999999999999
+          }
         },
         {
           "number": "18",
           "name": "~{DTR}",
-          "net": "DTR"
+          "net": "DTR",
+          "position": {
+            "x": 104.14,
+            "y": 152.39999999999998
+          }
         },
         {
           "number": "4",
           "name": "~{DSR}",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 104.14,
+            "y": 154.94
+          }
         },
         {
           "number": "5",
           "name": "~{DCD}",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 104.14,
+            "y": 157.48
+          }
         },
         {
           "number": "2",
           "name": "~{RI}",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 104.14,
+            "y": 160.01999999999998
+          }
         },
         {
           "number": "15",
           "name": "CBUS0",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 104.14,
+            "y": 165.1
+          }
         },
         {
           "number": "14",
           "name": "CBUS1",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 104.14,
+            "y": 167.64
+          }
         },
         {
           "number": "7",
           "name": "CBUS2",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 104.14,
+            "y": 170.17999999999998
+          }
         },
         {
           "number": "16",
           "name": "CBUS3",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 104.14,
+            "y": 172.72
+          }
         }
       ]
     },
@@ -853,18 +1096,7 @@
         "Description": ""
       },
       "category": "other",
-      "pins": [
-        {
-          "number": "1",
-          "name": "Pin_1",
-          "net": null
-        },
-        {
-          "number": "2",
-          "name": "Pin_2",
-          "net": "BAT+"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "R23",
@@ -891,12 +1123,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "BAT_SENSE"
+          "net": "BAT_SENSE",
+          "position": {
+            "x": 53.34,
+            "y": 71.12
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "Net-(U1-Pad7)"
+          "net": "Net-(R23-Pad2)",
+          "position": {
+            "x": 45.72,
+            "y": 71.12
+          }
         }
       ]
     },
@@ -923,98 +1163,7 @@
         "Area": "28 mm \u00d7 22 mm"
       },
       "category": "other",
-      "pins": [
-        {
-          "number": "6",
-          "name": "RES",
-          "net": null
-        },
-        {
-          "number": "7",
-          "name": "A0",
-          "net": "LCD_A0"
-        },
-        {
-          "number": "8",
-          "name": "SDA",
-          "net": "LCD_MOSI"
-        },
-        {
-          "number": "9",
-          "name": "SCK",
-          "net": "LCD_SCK"
-        },
-        {
-          "number": "12",
-          "name": "CS",
-          "net": "LCD_CS"
-        },
-        {
-          "number": "1",
-          "name": "NC",
-          "net": null
-        },
-        {
-          "number": "14",
-          "name": "NC",
-          "net": null
-        },
-        {
-          "number": "15",
-          "name": "YU",
-          "net": "Y+"
-        },
-        {
-          "number": "16",
-          "name": "XL",
-          "net": "X+"
-        },
-        {
-          "number": "17",
-          "name": "YD",
-          "net": "Y-"
-        },
-        {
-          "number": "18",
-          "name": "XR",
-          "net": "X-"
-        },
-        {
-          "number": "3",
-          "name": "LED-",
-          "net": "LCD_CATHODE"
-        },
-        {
-          "number": "4",
-          "name": "LED+",
-          "net": "Net-(A1-Pad4)"
-        },
-        {
-          "number": "2",
-          "name": "GND",
-          "net": "Net-(A1-Pad2)"
-        },
-        {
-          "number": "10",
-          "name": "VCC",
-          "net": "+3.3V"
-        },
-        {
-          "number": "5",
-          "name": "GND",
-          "net": "LCD_PWR"
-        },
-        {
-          "number": "11",
-          "name": "IOVCC",
-          "net": "Net-(A1-Pad11)"
-        },
-        {
-          "number": "13",
-          "name": "GND",
-          "net": "Net-(A1-Pad13)"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "SW1",
@@ -1036,28 +1185,7 @@
         "Mounting": "Surface Mount, Right Angle"
       },
       "category": "other",
-      "pins": [
-        {
-          "number": "1_1",
-          "name": "1",
-          "net": "Net-(SW1-Pad1_1)"
-        },
-        {
-          "number": "1_2",
-          "name": "1",
-          "net": "Net-(SW1-Pad1_1)"
-        },
-        {
-          "number": "2_1",
-          "name": "2",
-          "net": "IO0"
-        },
-        {
-          "number": "2_2",
-          "name": "2",
-          "net": "IO0"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "U10",
@@ -1081,88 +1209,7 @@
         "Resolution": "12b"
       },
       "category": "ic",
-      "pins": [
-        {
-          "number": "15",
-          "name": "IN2",
-          "net": null
-        },
-        {
-          "number": "16",
-          "name": "IN1",
-          "net": null
-        },
-        {
-          "number": "13",
-          "name": "A1",
-          "net": "Net-(U10-Pad13)"
-        },
-        {
-          "number": "14",
-          "name": "A0",
-          "net": "Net-(U10-Pad14)"
-        },
-        {
-          "number": "3",
-          "name": "Y+",
-          "net": "Y+"
-        },
-        {
-          "number": "5",
-          "name": "Y-",
-          "net": "Y-"
-        },
-        {
-          "number": "2",
-          "name": "X+",
-          "net": "X+"
-        },
-        {
-          "number": "4",
-          "name": "X-",
-          "net": "X-"
-        },
-        {
-          "number": "7",
-          "name": "VBAT1",
-          "net": null
-        },
-        {
-          "number": "8",
-          "name": "VBAT2",
-          "net": null
-        },
-        {
-          "number": "1",
-          "name": "VDD",
-          "net": null
-        },
-        {
-          "number": "6",
-          "name": "GND",
-          "net": null
-        },
-        {
-          "number": "10",
-          "name": "~{PENIRQ}",
-          "net": "TOUCH_IRQ"
-        },
-        {
-          "number": "12",
-          "name": "SCL",
-          "net": "I2C_SCL"
-        },
-        {
-          "number": "11",
-          "name": "SDA",
-          "net": "I2C_SDA"
-        },
-        {
-          "number": "9",
-          "name": "VREF",
-          "net": "Net-(U10-Pad9)"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "U1",
@@ -1186,63 +1233,7 @@
         "Battery Chemistry": "Li-ion"
       },
       "category": "ic",
-      "pins": [
-        {
-          "number": "6",
-          "name": "BATT",
-          "net": "BAT+"
-        },
-        {
-          "number": "1",
-          "name": "TH",
-          "net": "Net-(R8-Pad2)"
-        },
-        {
-          "number": "9",
-          "name": "CSPL",
-          "net": null
-        },
-        {
-          "number": "7",
-          "name": "CSN",
-          "net": "Net-(U1-Pad7)"
-        },
-        {
-          "number": "8",
-          "name": "GND",
-          "net": null
-        },
-        {
-          "number": "10",
-          "name": "CSPH",
-          "net": "BAT_SENSE"
-        },
-        {
-          "number": "12",
-          "name": "ALRT",
-          "net": "BAT_ALRT"
-        },
-        {
-          "number": "13",
-          "name": "SDA",
-          "net": "I2C_SDA"
-        },
-        {
-          "number": "14",
-          "name": "SCL",
-          "net": "I2C_SCL"
-        },
-        {
-          "number": "11",
-          "name": "REG",
-          "net": "MAX_REG"
-        },
-        {
-          "number": "15",
-          "name": "EP",
-          "net": null
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "C6",
@@ -1270,12 +1261,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "Net-(Q1-Pad2)"
+          "net": "Net-(C6-Pad1)",
+          "position": {
+            "x": 80.01,
+            "y": 33.019999999999996
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 80.01,
+            "y": 40.64
+          }
         }
       ]
     },
@@ -1306,12 +1305,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "Net-(R8-Pad2)"
+          "net": "Net-(R8-Pad2)",
+          "position": {
+            "x": 36.83,
+            "y": 95.25
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 36.83,
+            "y": 105.41
+          }
         }
       ]
     },
@@ -1339,12 +1346,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "BAT+"
+          "net": "BAT+",
+          "position": {
+            "x": 29.210000000000004,
+            "y": 86.36
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "Net-(R8-Pad2)"
+          "net": "Net-(R8-Pad2)",
+          "position": {
+            "x": 36.830000000000005,
+            "y": 86.36
+          }
         }
       ]
     },
@@ -1370,23 +1385,7 @@
         "Type": "N-Channel"
       },
       "category": "ic",
-      "pins": [
-        {
-          "number": "1",
-          "name": "G",
-          "net": "LCD_EN"
-        },
-        {
-          "number": "3",
-          "name": "D",
-          "net": "LCD_PWR"
-        },
-        {
-          "number": "2",
-          "name": "S",
-          "net": null
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "D2",
@@ -1416,12 +1415,20 @@
         {
           "number": "1",
           "name": "A1",
-          "net": "GND"
+          "net": "GND",
+          "position": {
+            "x": 36.83,
+            "y": 170.18
+          }
         },
         {
           "number": "2",
           "name": "A2",
-          "net": "Net-(R3-Pad2)"
+          "net": "Net-(D2-Pad2)",
+          "position": {
+            "x": 36.83,
+            "y": 162.56
+          }
         }
       ]
     },
@@ -1451,12 +1458,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "IO12"
+          "net": "IO12",
+          "position": {
+            "x": 210.82,
+            "y": 130.81
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "GND"
+          "net": "GND",
+          "position": {
+            "x": 210.82,
+            "y": 138.43
+          }
         }
       ]
     },
@@ -1487,12 +1502,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "MAX_REG"
+          "net": "MAX_REG",
+          "position": {
+            "x": 66.04,
+            "y": 91.44
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 66.04,
+            "y": 99.06
+          }
         }
       ]
     },
@@ -1522,12 +1545,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 238.76,
+            "y": 104.14
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "LCD_LED"
+          "net": "LCD_LED",
+          "position": {
+            "x": 238.76,
+            "y": 96.52
+          }
         }
       ]
     },
@@ -1557,12 +1588,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "+3.3V"
+          "net": "+3.3V",
+          "position": {
+            "x": 165.1,
+            "y": 130.81
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "I2C_SCL"
+          "net": "I2C_SCL",
+          "position": {
+            "x": 165.1,
+            "y": 138.43
+          }
         }
       ]
     },
@@ -1592,12 +1631,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "RTS"
+          "net": "RTS",
+          "position": {
+            "x": 120.64999999999999,
+            "y": 143.51
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "Net-(R9-Pad2)"
+          "net": "Net-(R9-Pad2)",
+          "position": {
+            "x": 128.26999999999998,
+            "y": 143.51
+          }
         }
       ]
     },
@@ -1627,12 +1674,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "+3.3V"
+          "net": "+3.3V",
+          "position": {
+            "x": 187.96,
+            "y": 130.81
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "EN"
+          "net": "EN",
+          "position": {
+            "x": 187.96,
+            "y": 138.43
+          }
         }
       ]
     },
@@ -1662,12 +1717,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "+3.3V"
+          "net": "+3.3V",
+          "position": {
+            "x": 172.72,
+            "y": 130.81
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "I2C_SDA"
+          "net": "I2C_SDA",
+          "position": {
+            "x": 172.72,
+            "y": 138.43
+          }
         }
       ]
     },
@@ -1697,12 +1760,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "+3.3V"
+          "net": "+3.3V",
+          "position": {
+            "x": 180.34,
+            "y": 130.81
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "IO0"
+          "net": "IO0",
+          "position": {
+            "x": 180.34,
+            "y": 138.43
+          }
         }
       ]
     },
@@ -1732,12 +1803,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "+3.3V"
+          "net": "+3.3V",
+          "position": {
+            "x": 203.2,
+            "y": 130.81
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "BAT_ALRT"
+          "net": "BAT_ALRT",
+          "position": {
+            "x": 203.2,
+            "y": 138.43
+          }
         }
       ]
     },
@@ -1767,12 +1846,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "Net-(C13-Pad1)"
+          "net": "Net-(C13-Pad1)",
+          "position": {
+            "x": 92.71,
+            "y": 90.17
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "Net-(C13-Pad2)"
+          "net": "Net-(C13-Pad2)",
+          "position": {
+            "x": 92.71,
+            "y": 97.79
+          }
         }
       ]
     },
@@ -1802,12 +1889,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 205.74,
+            "y": 20.32
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 205.74,
+            "y": 27.939999999999998
+          }
         }
       ]
     },
@@ -1837,12 +1932,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 217.17,
+            "y": 20.32
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 217.17,
+            "y": 27.939999999999998
+          }
         }
       ]
     },
@@ -1872,12 +1975,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "Net-(C10-Pad1)"
+          "net": "Net-(C10-Pad1)",
+          "position": {
+            "x": 269.24,
+            "y": 148.59
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 269.24,
+            "y": 156.21
+          }
         }
       ]
     },
@@ -1907,12 +2018,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "BAT_SENSE"
+          "net": "BAT_SENSE",
+          "position": {
+            "x": 123.19,
+            "y": 59.69
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 123.19,
+            "y": 67.31
+          }
         }
       ]
     },
@@ -1940,12 +2059,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 269.24,
+            "y": 123.19
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "TOUCH_IRQ"
+          "net": "TOUCH_IRQ",
+          "position": {
+            "x": 269.24,
+            "y": 130.81
+          }
         }
       ]
     },
@@ -1973,12 +2100,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "+3.3V"
+          "net": "+3.3V",
+          "position": {
+            "x": 127.0,
+            "y": 21.59
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "REG_PG"
+          "net": "REG_PG",
+          "position": {
+            "x": 127.0,
+            "y": 29.209999999999997
+          }
         }
       ]
     },
@@ -2002,28 +2137,7 @@
         "Mounting": "Surface Mount, Right Angle"
       },
       "category": "other",
-      "pins": [
-        {
-          "number": "1_1",
-          "name": "1",
-          "net": "GND"
-        },
-        {
-          "number": "1_2",
-          "name": "1",
-          "net": "GND"
-        },
-        {
-          "number": "2_1",
-          "name": "2",
-          "net": "EN"
-        },
-        {
-          "number": "2_2",
-          "name": "2",
-          "net": "EN"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "Q6",
@@ -2047,23 +2161,7 @@
         "Type": "N-Channel"
       },
       "category": "ic",
-      "pins": [
-        {
-          "number": "1",
-          "name": "G",
-          "net": "LCD_LED"
-        },
-        {
-          "number": "3",
-          "name": "D",
-          "net": "LCD_CATHODE"
-        },
-        {
-          "number": "2",
-          "name": "S",
-          "net": null
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "R24",
@@ -2091,12 +2189,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 238.76,
+            "y": 82.55
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "LCD_EN"
+          "net": "LCD_EN",
+          "position": {
+            "x": 238.76,
+            "y": 74.92999999999999
+          }
         }
       ]
     },
@@ -2122,23 +2228,7 @@
         "Power": "250mW"
       },
       "category": "ic",
-      "pins": [
-        {
-          "number": "1",
-          "name": "B",
-          "net": "Net-(Q3-Pad1)"
-        },
-        {
-          "number": "3",
-          "name": "C",
-          "net": "Net-(Q3-Pad3)"
-        },
-        {
-          "number": "2",
-          "name": "E",
-          "net": "Net-(Q3-Pad2)"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "D4",
@@ -2168,12 +2258,20 @@
         {
           "number": "1",
           "name": "A1",
-          "net": "GND"
+          "net": "GND",
+          "position": {
+            "x": 46.99,
+            "y": 170.18
+          }
         },
         {
           "number": "2",
           "name": "A2",
-          "net": "VBUS"
+          "net": "VBUS",
+          "position": {
+            "x": 46.99,
+            "y": 162.56
+          }
         }
       ]
     },
@@ -2204,12 +2302,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "Net-(C16-Pad1)"
+          "net": "Net-(C16-Pad1)",
+          "position": {
+            "x": 100.33,
+            "y": 90.17
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "Net-(C16-Pad2)"
+          "net": "Net-(C16-Pad2)",
+          "position": {
+            "x": 100.33,
+            "y": 97.79
+          }
         }
       ]
     },
@@ -2239,12 +2345,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "+3.3V"
+          "net": "+3.3V",
+          "position": {
+            "x": 127.0,
+            "y": 35.559999999999995
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 127.0,
+            "y": 43.18
+          }
         }
       ]
     },
@@ -2274,12 +2388,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "LCD_CATHODE"
+          "net": "LCD_CATHODE",
+          "position": {
+            "x": 255.27,
+            "y": 90.17
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 255.27,
+            "y": 97.79
+          }
         }
       ]
     },
@@ -2309,12 +2431,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "Net-(Q1-Pad2)"
+          "net": "Net-(C6-Pad1)",
+          "position": {
+            "x": 91.44,
+            "y": 33.019999999999996
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 91.44,
+            "y": 40.64
+          }
         }
       ]
     },
@@ -2344,12 +2474,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "GND"
+          "net": "GND",
+          "position": {
+            "x": 105.41,
+            "y": 110.49000000000001
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "Net-(R5-Pad2)"
+          "net": "Net-(R5-Pad2)",
+          "position": {
+            "x": 105.41,
+            "y": 102.87
+          }
         }
       ]
     },
@@ -2379,12 +2517,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "BAT+"
+          "net": "BAT+",
+          "position": {
+            "x": 24.13,
+            "y": 83.82
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 24.13,
+            "y": 91.44
+          }
         }
       ]
     },
@@ -2416,12 +2562,20 @@
         {
           "number": "1",
           "name": "A1",
-          "net": "GND"
+          "net": "GND",
+          "position": {
+            "x": 41.91,
+            "y": 170.18
+          }
         },
         {
           "number": "2",
           "name": "A2",
-          "net": "Net-(D3-Pad2)"
+          "net": "Net-(R2-Pad2)",
+          "position": {
+            "x": 41.91,
+            "y": 162.56
+          }
         }
       ]
     },
@@ -2451,12 +2605,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "DTR"
+          "net": "DTR",
+          "position": {
+            "x": 120.64999999999999,
+            "y": 161.29
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "Net-(Q3-Pad1)"
+          "net": "Net-(R10-Pad2)",
+          "position": {
+            "x": 128.26999999999998,
+            "y": 161.29
+          }
         }
       ]
     },
@@ -2486,12 +2648,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "Net-(R3-Pad1)"
+          "net": "Net-(U2-Pad8)",
+          "position": {
+            "x": 58.42,
+            "y": 152.4
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "Net-(R3-Pad2)"
+          "net": "Net-(D2-Pad2)",
+          "position": {
+            "x": 50.8,
+            "y": 152.4
+          }
         }
       ]
     },
@@ -2522,12 +2692,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "+3.3V"
+          "net": "+3.3V",
+          "position": {
+            "x": 139.7,
+            "y": 35.559999999999995
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 139.7,
+            "y": 43.18
+          }
         }
       ]
     },
@@ -2557,12 +2735,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "LCD_PWR"
+          "net": "LCD_PWR",
+          "position": {
+            "x": 255.27,
+            "y": 68.58
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": null
+          "net": null,
+          "position": {
+            "x": 255.27,
+            "y": 76.2
+          }
         }
       ]
     },
@@ -2593,12 +2779,20 @@
         {
           "number": "1",
           "name": "~",
-          "net": "Net-(U2-Pad10)"
+          "net": "Net-(U2-Pad11)",
+          "position": {
+            "x": 63.5,
+            "y": 168.91
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "GND"
+          "net": "GND",
+          "position": {
+            "x": 63.5,
+            "y": 176.53
+          }
         }
       ]
     },
@@ -2624,93 +2818,7 @@
         "Operating Temperature": "-40\u00b0C ~ 85\u00b0C"
       },
       "category": "ic",
-      "pins": [
-        {
-          "number": "2",
-          "name": "ST",
-          "net": "Net-(U4-Pad2)"
-        },
-        {
-          "number": "1",
-          "name": "NC",
-          "net": null
-        },
-        {
-          "number": "11",
-          "name": "NC",
-          "net": null
-        },
-        {
-          "number": "13",
-          "name": "NC",
-          "net": null
-        },
-        {
-          "number": "16",
-          "name": "NC",
-          "net": null
-        },
-        {
-          "number": "4",
-          "name": "NC",
-          "net": null
-        },
-        {
-          "number": "9",
-          "name": "NC",
-          "net": null
-        },
-        {
-          "number": "7",
-          "name": "GND",
-          "net": "Net-(U4-Pad7)"
-        },
-        {
-          "number": "6",
-          "name": "GND",
-          "net": "GND"
-        },
-        {
-          "number": "15",
-          "name": "VS",
-          "net": "Net-(U4-Pad15)"
-        },
-        {
-          "number": "5",
-          "name": "GND",
-          "net": "GND"
-        },
-        {
-          "number": "EP",
-          "name": "EP",
-          "net": "Net-(U4-PadEP)"
-        },
-        {
-          "number": "12",
-          "name": "Xout",
-          "net": "Z_ACCEL"
-        },
-        {
-          "number": "10",
-          "name": "Yout",
-          "net": "X_ACCEL"
-        },
-        {
-          "number": "8",
-          "name": "Zout",
-          "net": "Y_ACCEL"
-        },
-        {
-          "number": "14",
-          "name": "Vs",
-          "net": "Net-(U4-Pad14)"
-        },
-        {
-          "number": "3",
-          "name": "GND",
-          "net": "GND"
-        }
-      ]
+      "pins": []
     },
     {
       "reference": "R17",
@@ -2738,26 +2846,29 @@
         {
           "number": "1",
           "name": "~",
-          "net": "+3.3V"
+          "net": "+3.3V",
+          "position": {
+            "x": 195.58,
+            "y": 130.81
+          }
         },
         {
           "number": "2",
           "name": "~",
-          "net": "CHG_STAT"
+          "net": "CHG_STAT",
+          "position": {
+            "x": 195.58,
+            "y": 138.43
+          }
         }
       ]
     }
   ],
   "nets": {
     "VBUS": {
-      "D4": [
+      "D1": [
         {
           "Pin": "2"
-        }
-      ],
-      "Q1": [
-        {
-          "Pin": "1"
         }
       ],
       "R1": [
@@ -2770,39 +2881,31 @@
           "Pin": "1"
         }
       ],
-      "D1": [
+      "D4": [
         {
           "Pin": "2"
         }
       ]
     },
     "EN": {
-      "U6": [
-        {
-          "Pin": "3"
-        }
-      ],
-      "SW2": [
-        {
-          "Pin": "2_2"
-        },
-        {
-          "Pin": "2_1"
-        }
-      ],
       "R16": [
         {
           "Pin": "2"
         }
+      ],
+      "U6": [
+        {
+          "Pin": "3"
+        }
       ]
     },
-    "Net-(U2-Pad10)": {
+    "Net-(U2-Pad11)": {
       "U2": [
         {
-          "Pin": "10"
+          "Pin": "11"
         },
         {
-          "Pin": "11"
+          "Pin": "10"
         }
       ],
       "C3": [
@@ -2827,19 +2930,9 @@
       ]
     },
     "I2C_SCL": {
-      "U1": [
-        {
-          "Pin": "14"
-        }
-      ],
       "R13": [
         {
           "Pin": "2"
-        }
-      ],
-      "U10": [
-        {
-          "Pin": "12"
         }
       ],
       "U6": [
@@ -2849,11 +2942,6 @@
       ]
     },
     "LCD_A0": {
-      "A1": [
-        {
-          "Pin": "7"
-        }
-      ],
       "U6": [
         {
           "Pin": "33"
@@ -2865,11 +2953,6 @@
         {
           "Pin": "27"
         }
-      ],
-      "A1": [
-        {
-          "Pin": "12"
-        }
       ]
     },
     "LCD_SCK": {
@@ -2877,69 +2960,20 @@
         {
           "Pin": "30"
         }
-      ],
-      "A1": [
-        {
-          "Pin": "9"
-        }
       ]
     },
     "GND": {
-      "U4": [
-        {
-          "Pin": "3"
-        },
-        {
-          "Pin": "5"
-        },
-        {
-          "Pin": "6"
-        }
-      ],
-      "#PWR0108": [
+      "D2": [
         {
           "Pin": "1"
         }
       ],
-      "R1": [
-        {
-          "Pin": "2"
-        }
-      ],
-      "#PWR05": [
+      "#PWR0107": [
         {
           "Pin": "1"
         }
       ],
-      "#PWR09": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0126": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0138": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "SW2": [
-        {
-          "Pin": "1_1"
-        },
-        {
-          "Pin": "1_2"
-        }
-      ],
-      "D3": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0146": [
+      "#PWR0116": [
         {
           "Pin": "1"
         }
@@ -2949,7 +2983,42 @@
           "Pin": "2"
         }
       ],
-      "R5": [
+      "R19": [
+        {
+          "Pin": "2"
+        }
+      ],
+      "#PWR0139": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0126": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0106": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "D3": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0108": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "U2": [
+        {
+          "Pin": "13"
+        }
+      ],
+      "D4": [
         {
           "Pin": "1"
         }
@@ -2959,9 +3028,54 @@
           "Pin": "1"
         }
       ],
-      "R19": [
+      "#PWR05": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0115": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0127": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0146": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR04": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "R5": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "R1": [
         {
           "Pin": "2"
+        }
+      ],
+      "#PWR0134": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR09": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0138": [
+        {
+          "Pin": "1"
         }
       ],
       "#PWR0112": [
@@ -2973,90 +3087,32 @@
         {
           "Pin": "1"
         }
-      ],
-      "#PWR0107": [
+      ]
+    },
+    "Net-(C6-Pad1)": {
+      "C6": [
         {
           "Pin": "1"
         }
       ],
-      "#PWR0106": [
+      "C4": [
         {
           "Pin": "1"
         }
       ],
-      "D4": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0115": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0139": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "D2": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0127": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "J10": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "U2": [
-        {
-          "Pin": "13"
-        }
-      ],
-      "#PWR0116": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0134": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR04": [
+      "C2": [
         {
           "Pin": "1"
         }
       ]
     },
     "BAT+": {
-      "U1": [
-        {
-          "Pin": "6"
-        }
-      ],
-      "R8": [
-        {
-          "Pin": "1"
-        }
-      ],
       "C1": [
         {
           "Pin": "1"
         }
       ],
-      "J2": [
-        {
-          "Pin": "2"
-        }
-      ],
-      "J8": [
+      "R8": [
         {
           "Pin": "1"
         }
@@ -3067,107 +3123,36 @@
         {
           "Pin": "12"
         }
-      ],
-      "U4": [
-        {
-          "Pin": "8"
-        }
       ]
     },
     "RTS": {
-      "R9": [
-        {
-          "Pin": "1"
-        }
-      ],
       "U2": [
         {
           "Pin": "19"
         }
+      ],
+      "R9": [
+        {
+          "Pin": "1"
+        }
       ]
     },
     "I2C_SDA": {
-      "U6": [
-        {
-          "Pin": "9"
-        }
-      ],
-      "U1": [
-        {
-          "Pin": "13"
-        }
-      ],
       "R14": [
         {
           "Pin": "2"
         }
       ],
-      "U10": [
+      "U6": [
         {
-          "Pin": "11"
+          "Pin": "9"
         }
       ]
     },
     "Net-(unnamed-2)": {},
-    "Net-(U4-Pad14)": {
-      "U4": [
-        {
-          "Pin": "14"
-        }
-      ]
-    },
+    "Net-(unnamed-3)": {},
     "+3.3V": {
-      "R14": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR08": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "A1": [
-        {
-          "Pin": "10"
-        }
-      ],
-      "R15": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "U3": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0110": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "R17": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0111": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0104": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "C5": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0109": [
+      "#PWR0122": [
         {
           "Pin": "1"
         }
@@ -3177,47 +3162,7 @@
           "Pin": "1"
         }
       ],
-      "C8": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0133": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "J9": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0122": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0114": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "R18": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0103": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "#PWR0117": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "R13": [
+      "#PWR08": [
         {
           "Pin": "1"
         }
@@ -3227,12 +3172,37 @@
           "Pin": "1"
         }
       ],
+      "#PWR0111": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "C8": [
+        {
+          "Pin": "1"
+        }
+      ],
       "#PWR0105": [
         {
           "Pin": "1"
         }
       ],
-      "R7": [
+      "R13": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0114": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0110": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0117": [
         {
           "Pin": "1"
         }
@@ -3242,21 +3212,63 @@
           "Pin": "12"
         }
       ],
+      "R14": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0104": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0109": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "R17": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "R15": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0133": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "#PWR0103": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "R18": [
+        {
+          "Pin": "1"
+        }
+      ],
       "R16": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "C5": [
+        {
+          "Pin": "1"
+        }
+      ],
+      "R7": [
         {
           "Pin": "1"
         }
       ]
     },
     "IO0": {
-      "SW1": [
-        {
-          "Pin": "2_1"
-        },
-        {
-          "Pin": "2_2"
-        }
-      ],
       "R15": [
         {
           "Pin": "2"
@@ -3276,26 +3288,20 @@
       ]
     },
     "DTR": {
-      "R10": [
-        {
-          "Pin": "1"
-        }
-      ],
       "U2": [
         {
           "Pin": "18"
         }
-      ]
-    },
-    "Net-(U4-PadEP)": {
-      "U4": [
+      ],
+      "R10": [
         {
-          "Pin": "EP"
+          "Pin": "1"
         }
       ]
     },
-    "Net-(R3-Pad2)": {
-      "R3": [
+    "Net-(unnamed-4)": {},
+    "Net-(D2-Pad2)": {
+      "D2": [
         {
           "Pin": "2"
         }
@@ -3305,20 +3311,14 @@
           "Pin": "3"
         }
       ],
-      "D2": [
+      "R3": [
         {
           "Pin": "2"
         }
       ]
     },
-    "Net-(unnamed-3)": {},
-    "Net-(Q2-Pad3)": {
-      "Q2": [
-        {
-          "Pin": "3"
-        }
-      ]
-    },
+    "Net-(unnamed-5)": {},
+    "Net-(unnamed-6)": {},
     "Net-(R8-Pad2)": {
       "R8": [
         {
@@ -3329,32 +3329,10 @@
         {
           "Pin": "1"
         }
-      ],
-      "U1": [
-        {
-          "Pin": "1"
-        }
       ]
     },
-    "Net-(A1-Pad13)": {
-      "A1": [
-        {
-          "Pin": "13"
-        }
-      ]
-    },
-    "Y+": {
-      "U10": [
-        {
-          "Pin": "3"
-        }
-      ],
-      "A1": [
-        {
-          "Pin": "15"
-        }
-      ]
-    },
+    "Net-(unnamed-7)": {},
+    "Y+": {},
     "Net-(C16-Pad1)": {
       "C16": [
         {
@@ -3362,84 +3340,29 @@
         }
       ]
     },
-    "Net-(U3-Pad4)": {
-      "U3": [
-        {
-          "Pin": "4"
-        }
-      ]
-    },
-    "Net-(U3-Pad5)": {
-      "U3": [
-        {
-          "Pin": "5"
-        }
-      ]
-    },
-    "Net-(unnamed-4)": {},
-    "Net-(Q1-Pad2)": {
-      "Q1": [
-        {
-          "Pin": "2"
-        }
-      ],
-      "C6": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "U3": [
-        {
-          "Pin": "6"
-        }
-      ],
-      "C2": [
-        {
-          "Pin": "1"
-        }
-      ],
-      "C4": [
-        {
-          "Pin": "1"
-        }
-      ]
-    },
-    "Net-(R2-Pad1)": {
-      "R2": [
-        {
-          "Pin": "1"
-        }
-      ],
+    "Net-(unnamed-8)": {},
+    "Net-(unnamed-9)": {},
+    "Net-(unnamed-10)": {},
+    "Net-(U2-Pad9)": {
       "U2": [
         {
           "Pin": "9"
         }
+      ],
+      "R2": [
+        {
+          "Pin": "1"
+        }
       ]
     },
     "LCD_PWR": {
-      "A1": [
-        {
-          "Pin": "5"
-        }
-      ],
       "C14": [
         {
           "Pin": "1"
         }
-      ],
-      "Q5": [
-        {
-          "Pin": "3"
-        }
       ]
     },
-    "Net-(U10-Pad14)": {
-      "U10": [
-        {
-          "Pin": "14"
-        }
-      ]
-    },
+    "Net-(unnamed-11)": {},
     "Net-(J1-Pad2)": {
       "J1": [
         {
@@ -3454,37 +3377,26 @@
         }
       ]
     },
-    "Net-(U4-Pad7)": {
-      "U4": [
-        {
-          "Pin": "7"
-        }
-      ]
-    },
+    "Net-(unnamed-12)": {},
     "TOUCH_IRQ": {
-      "U10": [
+      "R4": [
         {
-          "Pin": "10"
+          "Pin": "2"
         }
       ],
       "U6": [
         {
           "Pin": "26"
         }
-      ],
-      "R4": [
-        {
-          "Pin": "2"
-        }
       ]
     },
     "BAT_SENSE": {
-      "U1": [
+      "C7": [
         {
-          "Pin": "10"
+          "Pin": "1"
         }
       ],
-      "C7": [
+      "R23": [
         {
           "Pin": "1"
         }
@@ -3493,49 +3405,33 @@
         {
           "Pin": "3"
         }
-      ],
-      "R23": [
-        {
-          "Pin": "1"
-        }
       ]
     },
     "REG_PG": {
-      "R7": [
-        {
-          "Pin": "2"
-        }
-      ],
       "U6": [
         {
           "Pin": "4"
         }
       ],
-      "U3": [
-        {
-          "Pin": "3"
-        }
-      ]
-    },
-    "Net-(D3-Pad2)": {
-      "D3": [
+      "R7": [
         {
           "Pin": "2"
         }
-      ],
+      ]
+    },
+    "Net-(R2-Pad2)": {
       "R2": [
         {
           "Pin": "2"
         }
-      ]
-    },
-    "Net-(U10-Pad9)": {
-      "U10": [
+      ],
+      "D3": [
         {
-          "Pin": "9"
+          "Pin": "2"
         }
       ]
     },
+    "Net-(unnamed-13)": {},
     "IO12": {
       "U6": [
         {
@@ -3548,19 +3444,8 @@
         }
       ]
     },
-    "Net-(U4-Pad2)": {
-      "U4": [
-        {
-          "Pin": "2"
-        }
-      ]
-    },
-    "Net-(U1-Pad7)": {
-      "U1": [
-        {
-          "Pin": "7"
-        }
-      ],
+    "Net-(unnamed-14)": {},
+    "Net-(R23-Pad2)": {
       "R23": [
         {
           "Pin": "2"
@@ -3579,23 +3464,13 @@
         {
           "Pin": "37"
         }
-      ],
-      "A1": [
-        {
-          "Pin": "8"
-        }
       ]
     },
-    "Net-(unnamed-5)": {},
+    "Net-(unnamed-15)": {},
     "X_ACCEL": {
       "U6": [
         {
           "Pin": "11"
-        }
-      ],
-      "U4": [
-        {
-          "Pin": "10"
         }
       ]
     },
@@ -3606,74 +3481,30 @@
         }
       ]
     },
-    "Net-(U3-Pad7)": {
-      "U3": [
-        {
-          "Pin": "7"
-        }
-      ]
-    },
+    "Net-(unnamed-16)": {},
     "MAX_REG": {
       "C11": [
         {
           "Pin": "1"
         }
-      ],
-      "U1": [
-        {
-          "Pin": "11"
-        }
       ]
     },
-    "Net-(Q1-Pad3)": {
-      "Q1": [
-        {
-          "Pin": "3"
-        }
-      ]
-    },
-    "X+": {
-      "A1": [
-        {
-          "Pin": "16"
-        }
-      ],
-      "U10": [
-        {
-          "Pin": "2"
-        }
-      ]
-    },
-    "Y-": {
-      "A1": [
-        {
-          "Pin": "17"
-        }
-      ],
-      "U10": [
-        {
-          "Pin": "5"
-        }
-      ]
-    },
+    "Net-(unnamed-17)": {},
+    "X+": {},
+    "Y-": {},
     "LCD_CATHODE": {
-      "A1": [
-        {
-          "Pin": "3"
-        }
-      ],
       "C15": [
         {
           "Pin": "1"
         }
-      ],
-      "Q6": [
-        {
-          "Pin": "3"
-        }
       ]
     },
     "CHG_STAT": {
+      "U5": [
+        {
+          "Pin": "1"
+        }
+      ],
       "U6": [
         {
           "Pin": "7"
@@ -3682,11 +3513,6 @@
       "R17": [
         {
           "Pin": "2"
-        }
-      ],
-      "U5": [
-        {
-          "Pin": "1"
         }
       ]
     },
@@ -3702,25 +3528,14 @@
         }
       ]
     },
-    "Net-(Q3-Pad1)": {
-      "Q3": [
-        {
-          "Pin": "1"
-        }
-      ],
+    "Net-(R10-Pad2)": {
       "R10": [
         {
           "Pin": "2"
         }
       ]
     },
-    "Net-(A1-Pad2)": {
-      "A1": [
-        {
-          "Pin": "2"
-        }
-      ]
-    },
+    "Net-(unnamed-18)": {},
     "Net-(U2-Pad21)": {
       "U2": [
         {
@@ -3728,7 +3543,7 @@
         }
       ]
     },
-    "Net-(unnamed-6)": {},
+    "Net-(unnamed-19)": {},
     "Net-(R6-Pad2)": {
       "R6": [
         {
@@ -3748,66 +3563,30 @@
         }
       ]
     },
-    "Net-(SW1-Pad1_1)": {
-      "SW1": [
-        {
-          "Pin": "1_1"
-        },
-        {
-          "Pin": "1_2"
-        }
-      ]
-    },
+    "Net-(unnamed-20)": {},
     "LCD_EN": {
-      "Q5": [
+      "U6": [
         {
-          "Pin": "1"
+          "Pin": "16"
         }
       ],
       "R24": [
         {
           "Pin": "2"
         }
-      ],
+      ]
+    },
+    "X-": {},
+    "Net-(unnamed-21)": {},
+    "LCD_LED": {
       "U6": [
         {
-          "Pin": "16"
-        }
-      ]
-    },
-    "X-": {
-      "U10": [
-        {
-          "Pin": "4"
-        }
-      ],
-      "A1": [
-        {
-          "Pin": "18"
-        }
-      ]
-    },
-    "Net-(A1-Pad11)": {
-      "A1": [
-        {
-          "Pin": "11"
-        }
-      ]
-    },
-    "LCD_LED": {
-      "Q6": [
-        {
-          "Pin": "1"
+          "Pin": "13"
         }
       ],
       "R22": [
         {
           "Pin": "2"
-        }
-      ],
-      "U6": [
-        {
-          "Pin": "13"
         }
       ]
     },
@@ -3815,11 +3594,6 @@
       "R18": [
         {
           "Pin": "2"
-        }
-      ],
-      "U1": [
-        {
-          "Pin": "12"
         }
       ],
       "U6": [
@@ -3833,26 +3607,10 @@
         {
           "Pin": "2"
         }
-      ],
-      "Q2": [
-        {
-          "Pin": "1"
-        }
       ]
     },
-    "Net-(U10-Pad13)": {
-      "U10": [
-        {
-          "Pin": "13"
-        }
-      ]
-    },
+    "Net-(unnamed-22)": {},
     "Z_ACCEL": {
-      "U4": [
-        {
-          "Pin": "12"
-        }
-      ],
       "U6": [
         {
           "Pin": "10"
@@ -3866,20 +3624,8 @@
         }
       ]
     },
-    "Net-(Q3-Pad2)": {
-      "Q3": [
-        {
-          "Pin": "2"
-        }
-      ]
-    },
-    "Net-(U4-Pad15)": {
-      "U4": [
-        {
-          "Pin": "15"
-        }
-      ]
-    },
+    "Net-(unnamed-23)": {},
+    "Net-(unnamed-24)": {},
     "Net-(C10-Pad1)": {
       "C10": [
         {
@@ -3887,13 +3633,7 @@
         }
       ]
     },
-    "Net-(A1-Pad4)": {
-      "A1": [
-        {
-          "Pin": "4"
-        }
-      ]
-    },
+    "Net-(unnamed-25)": {},
     "Net-(J1-Pad6)": {
       "J1": [
         {
@@ -3901,30 +3641,18 @@
         }
       ]
     },
-    "Net-(Q2-Pad2)": {
-      "Q2": [
-        {
-          "Pin": "2"
-        }
-      ]
-    },
-    "Net-(unnamed-7)": {},
-    "Net-(Q3-Pad3)": {
-      "Q3": [
-        {
-          "Pin": "3"
-        }
-      ]
-    },
-    "Net-(R3-Pad1)": {
-      "R3": [
-        {
-          "Pin": "1"
-        }
-      ],
+    "Net-(unnamed-26)": {},
+    "Net-(unnamed-27)": {},
+    "Net-(unnamed-28)": {},
+    "Net-(U2-Pad8)": {
       "U2": [
         {
           "Pin": "8"
+        }
+      ],
+      "R3": [
+        {
+          "Pin": "1"
         }
       ]
     },
