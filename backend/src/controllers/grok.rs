@@ -1,13 +1,19 @@
 use axum::{extract::State, http::StatusCode, response::Json};
 use std::sync::Arc;
-use tracing::info;
+use tracing::{error, info};
 
 use crate::services::git;
 use crate::types::{
     ApiError, GrokCommitSummaryRequest, GrokCommitSummaryResponse, GrokRepoSummaryRequest,
     GrokRepoSummaryResponse, GrokSelectionSummaryRequest, GrokSelectionSummaryResponse,
 };
-use kicad_db::PgPool;
+// use kicad_db::PgPool;
+use kicad_db::{
+    messages::{ChatCompletionRequest, Message},
+    utilities::load_environment_file::load_environment_file,
+    xai_client::XaiClient,
+    PgPool,
+};
 
 pub type AppState = Arc<PgPool>;
 
@@ -31,42 +37,106 @@ pub async fn summarize_commit(
         req.repo, req.commit
     );
 
+    // Load environment file to get XAI_API_KEY
+    load_environment_file(None).map_err(|e| {
+        error!("Failed to load environment file: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ApiError::internal(format!("Failed to load environment: {}", e))),
+        )
+    })?;
+
+    // Create XAI client
+    let xai_client = XaiClient::new().map_err(|e| {
+        error!("Failed to create XAI client: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ApiError::internal(format!("Failed to initialize XAI client: {}", e))),
+        )
+    })?;
+
+    // Construct GitHub commit URL
+    let github_url = format!("https://github.com/{}/commit/{}", req.repo, req.commit);
+    
+    // Create user message with GitHub URL
+    let user_message = format!(
+        "Search online for the changes in the commit {} and summarize the changes",
+        github_url
+    );
+
+    // Create messages for XAI API
+    let messages = vec![
+        Message::system("You are a helpful assistant".to_string()),
+        Message::user(user_message),
+    ];
+
+    // Create chat completion request with hardcoded model
+    let chat_request = ChatCompletionRequest::new(messages, "grok-4-1-fast-reasoning".to_string());
+
+    // Make API call
+    let api_response = xai_client.chat_completion(&chat_request).await.map_err(|e| {
+        error!("XAI API call failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ApiError::internal(format!("Failed to get AI summary: {}", e))),
+        )
+    })?;
+
+    // TODO: Implement this or not.
     // Get changed files for context
-    let changed_files = git::get_changed_schematic_files(&req.repo, &req.commit)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(ApiError::internal(format!(
-                    "Failed to fetch changed files: {}",
-                    e
-                ))),
-            )
-        })?;
+    // let changed_files = git::get_changed_schematic_files(&req.repo, &req.commit)
+    //     .await
+    //     .map_err(|e| {
+    //         (
+    //             StatusCode::INTERNAL_SERVER_ERROR,
+    //             Json(ApiError::internal(format!(
+    //                 "Failed to fetch changed files: {}",
+    //                 e
+    //             ))),
+    //         )
+    //     })?;
+
+    // Extract response content
+    let summary = api_response
+        .choices
+        .first()
+        .and_then(|choice| choice.message.as_ref())
+        .and_then(|msg| msg.content.as_ref())
+        .cloned()
+        .unwrap_or_else(|| "No response content available".to_string());
+
+    // Use the same content for both summary and details for now
+    // You can split this later if needed
+    let details = summary.clone();
+
+    info!(
+        "Successfully generated summary for {}/{}",
+        req.repo, req.commit
+    );
 
     // Mock response - TODO: integrate with actual Grok API
-    let summary = format!(
-        "[MOCK] This commit modified {} schematic file(s) in the {} repository.",
-        changed_files.len(),
-        req.repo
-    );
+    // let summary = format!(
+    //     "[MOCK] This commit modified {} schematic file(s) in the {} repository.",
+    //     changed_files.len(),
+    //     req.repo
+    // );
 
-    let details = format!(
-        "[MOCK] Detailed analysis of commit {}:\n\n\
-        Changed files:\n{}\n\n\
-        This is a placeholder response. In production, this would contain \
-        AI-generated insights about the schematic changes, including:\n\
-        - Component additions/removals\n\
-        - Net connectivity changes\n\
-        - Design rule modifications\n\
-        - Potential impact on board layout",
-        req.commit,
-        changed_files
-            .iter()
-            .map(|f| format!("  - {}", f))
-            .collect::<Vec<_>>()
-            .join("\n")
-    );
+    // let details = format!(
+    //     "[MOCK] Detailed analysis of commit {}:\n\n\
+    //     Changed files:\n{}\n\n\
+    //     This is a placeholder response. In production, this would contain \
+    //     AI-generated insights about the schematic changes, including:\n\
+    //     - Component additions/removals\n\
+    //     - Net connectivity changes\n\
+    //     - Design rule modifications\n\
+    //     - Potential impact on board layout",
+    //     req.commit,
+    //     changed_files
+    //         .iter()
+    //         .map(|f| format!("  - {}", f))
+    //         .collect::<Vec<_>>()
+    //         .join("\n")
+    // );
 
     Ok(Json(GrokCommitSummaryResponse {
         repo: req.repo,
