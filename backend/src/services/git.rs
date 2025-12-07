@@ -171,7 +171,13 @@ fn has_schematic_changes(repo: &Repository, commit: &git2::Commit) -> Result<boo
     }
 }
 
-/// Get all .kicad_sch files at a specific commit
+/// Check if a file is a KiCad file we need for distillation
+fn is_kicad_file(name: &str) -> bool {
+    name.ends_with(".kicad_sch") || name.ends_with(".kicad_pro")
+}
+
+/// Get all .kicad_sch and .kicad_pro files at a specific commit
+/// We need both: .kicad_sch for the actual schematics, and .kicad_pro to identify the root
 pub async fn get_schematic_files(repo_slug: &str, commit_hash: &str) -> Result<Vec<SchematicFile>> {
     let repo = get_repo(repo_slug).await?;
     let commit_hash = commit_hash.to_string();
@@ -185,7 +191,7 @@ pub async fn get_schematic_files(repo_slug: &str, commit_hash: &str) -> Result<V
 
         tree.walk(git2::TreeWalkMode::PreOrder, |dir, entry| {
             if let Some(name) = entry.name() {
-                if name.ends_with(".kicad_sch") && entry.kind() == Some(ObjectType::Blob) {
+                if is_kicad_file(name) && entry.kind() == Some(ObjectType::Blob) {
                     let path = if dir.is_empty() {
                         name.to_string()
                     } else {
