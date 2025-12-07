@@ -10,17 +10,19 @@ import { CSS, attribute, html, query } from "../../base/web-components";
 import { KCUIElement, KCUIIconElement } from "../../kc-ui";
 import { sprites_url } from "../icons/sprites";
 import { Project } from "../project";
-import { GitHub } from "../services/github";
-import { GitHubFileSystem } from "../services/github-vfs";
 import { FetchFileSystem, type VirtualFileSystem } from "../services/vfs";
+import { CommitFileSystem } from "../services/commit-vfs";
+import { GrokiAPI } from "../services/api";
 import { KCBoardAppElement } from "./kc-board/app";
 import { KCSchematicAppElement } from "./kc-schematic/app";
+import { KCCommitHistoryPanelElement } from "./common/commit-history-panel";
 
 import kc_ui_styles from "../../kc-ui/kc-ui.css";
 import shell_styles from "./kicanvas-shell.css";
 
 import "../icons/sprites";
 import "./common/project-panel";
+import "./common/commit-history-panel";
 
 // Setup KCUIIconElement to use icon sprites.
 KCUIIconElement.sprites_url = sprites_url;
@@ -37,6 +39,7 @@ KCUIIconElement.sprites_url = sprites_url;
  *
  * <kc-kicanvas-shell>
  *   <kc-ui-app>
+ *     <kc-commit-history-panel>
  *     <kc-project-panel>
  *     <kc-schematic-app>
  *       <kc-schematic-viewer>
@@ -58,6 +61,9 @@ class KiCanvasShellElement extends KCUIElement {
 
     #schematic_app: KCSchematicAppElement;
     #board_app: KCBoardAppElement;
+    #commit_history_panel: KCCommitHistoryPanelElement | null = null;
+    #current_repo: string | null = null;
+    #current_commit: string | null = null;
 
     constructor() {
         super();
@@ -76,6 +82,9 @@ class KiCanvasShellElement extends KCUIElement {
     @query(`input[name="link"]`, true)
     public link_input: HTMLInputElement;
 
+    @query("kc-commit-history-panel", true)
+    public commit_panel: KCCommitHistoryPanelElement;
+
     override initialContentCallback() {
         const url_params = new URLSearchParams(document.location.search);
         const github_paths = url_params.getAll("github");
@@ -88,29 +97,109 @@ class KiCanvasShellElement extends KCUIElement {
             }
 
             if (github_paths.length) {
-                const vfs = await GitHubFileSystem.fromURLs(...github_paths);
-                await this.setup_project(vfs);
+                // Extract repo from the first GitHub URL
+                const repo = GrokiAPI.extractRepoFromUrl(github_paths[0]!);
+                if (repo) {
+                    this.#current_repo = repo;
+                    // Load via backend API (avoids GitHub rate limits)
+                    await this.loadViaBackendAPI(repo);
+                } else {
+                    console.error("Could not extract repo from GitHub URL");
+                }
                 return;
             }
 
             new DropTarget(this, async (fs) => {
+                // For drag+drop, we don't have commit history
+                this.#current_repo = null;
+                this.#current_commit = null;
                 await this.setup_project(fs);
             });
         });
 
         this.link_input.addEventListener("input", async (e) => {
             const link = this.link_input.value;
-            if (!GitHub.parse_url(link)) {
+
+            // Extract repo from the link
+            const repo = GrokiAPI.extractRepoFromUrl(link);
+            if (!repo) {
                 return;
             }
 
-            const vfs = await GitHubFileSystem.fromURLs(link);
-            await this.setup_project(vfs);
+            this.#current_repo = repo;
+            await this.loadViaBackendAPI(repo);
 
             const location = new URL(window.location.href);
             location.searchParams.set("github", link);
             window.history.pushState(null, "", location);
         });
+
+        // Listen for commit selection events from the history panel
+        this.addEventListener("commit-select", async (e: Event) => {
+            const detail = (e as CustomEvent).detail;
+            await this.loadCommit(detail.repo, detail.commit);
+        });
+    }
+
+    /**
+     * Load repository via the backend API
+     */
+    private async loadViaBackendAPI(repo: string): Promise<void> {
+        this.loaded = false;
+        this.loading = true;
+
+        try {
+            // Get commits from our API
+            const commits = await GrokiAPI.getCommits(repo);
+
+            if (commits.length > 0) {
+                // Load the most recent commit
+                const latestCommit = commits[0]!.commit_hash;
+                this.#current_commit = latestCommit;
+
+                // Load the schematic files for this commit via backend
+                const vfs = await CommitFileSystem.fromCommit(
+                    repo,
+                    latestCommit,
+                );
+                await this.setup_project(vfs);
+
+                // Update the commit history panel
+                if (this.#commit_history_panel) {
+                    await this.#commit_history_panel.setRepo(repo);
+                    this.#commit_history_panel.setSelectedCommit(latestCommit);
+                }
+            } else {
+                throw new Error("No commits with schematic files found");
+            }
+        } catch (e) {
+            console.error("Backend API failed:", e);
+            this.loading = false;
+            alert(
+                "Failed to load schematic. Please ensure the backend is running and the repository exists.",
+            );
+        }
+    }
+
+    /**
+     * Load a specific commit
+     */
+    private async loadCommit(repo: string, commit: string): Promise<void> {
+        if (this.#current_commit === commit) {
+            return;
+        }
+
+        this.loaded = false;
+        this.loading = true;
+        this.#current_commit = commit;
+
+        try {
+            const vfs = await CommitFileSystem.fromCommit(repo, commit);
+            await this.setup_project(vfs);
+        } catch (e) {
+            console.error("Failed to load commit:", e);
+            this.loading = false;
+        }
     }
 
     private async setup_project(vfs: VirtualFileSystem) {
@@ -119,7 +208,10 @@ class KiCanvasShellElement extends KCUIElement {
 
         try {
             await this.project.load(vfs);
-            this.project.set_active_page(this.project.first_page);
+            // Prefer schematic pages over board pages
+            const schematicPage =
+                this.project.root_schematic_page ?? this.project.first_page;
+            this.project.set_active_page(schematicPage);
             this.loaded = true;
         } catch (e) {
             console.error(e);
@@ -135,6 +227,9 @@ class KiCanvasShellElement extends KCUIElement {
         this.#board_app = html`
             <kc-board-app controls="full"></kc-board-app>
         ` as KCBoardAppElement;
+        this.#commit_history_panel = html`
+            <kc-commit-history-panel></kc-commit-history-panel>
+        ` as KCCommitHistoryPanelElement;
 
         return html`
             <kc-ui-app>
@@ -142,7 +237,10 @@ class KiCanvasShellElement extends KCUIElement {
                     <div class="hero-glow"></div>
                     <div class="circuit-pattern"></div>
                     <h1>
-                        <img class="logo-icon" src="images/Grok_Logomark_Light.png" alt="Grok" />
+                        <img
+                            class="logo-icon"
+                            src="images/Grok_Logomark_Light.png"
+                            alt="Grok" />
                         <span class="logo-text">groki</span>
                     </h1>
                     <p class="tagline">
@@ -164,7 +262,10 @@ class KiCanvasShellElement extends KCUIElement {
                             <span>Circuit Summaries</span>
                         </div>
                         <div class="feature">
-                            <img class="feature-icon" src="images/xAI_Logomark_Light.png" alt="xAI" />
+                            <img
+                                class="feature-icon"
+                                src="images/xAI_Logomark_Light.png"
+                                alt="xAI" />
                             <span>Powered by Grok</span>
                         </div>
                     </div>
@@ -179,9 +280,24 @@ class KiCanvasShellElement extends KCUIElement {
                         Nothing ever leaves your machine.
                     </p>
                 </section>
+                ${this.#commit_history_panel}
                 <main>${this.#schematic_app} ${this.#board_app}</main>
             </kc-ui-app>
         `;
+    }
+
+    override renderedCallback() {
+        // After render, update the commit history panel if we have a repo
+        if (this.#current_repo && this.#commit_history_panel) {
+            later(async () => {
+                await this.#commit_history_panel!.setRepo(this.#current_repo!);
+                if (this.#current_commit) {
+                    this.#commit_history_panel!.setSelectedCommit(
+                        this.#current_commit,
+                    );
+                }
+            });
+        }
     }
 }
 

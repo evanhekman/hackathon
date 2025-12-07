@@ -58,25 +58,47 @@ export class GitHubFileSystem extends VirtualFileSystem {
             // Link to a directory.
             if (info.type == "tree") {
                 // Get a list of files in the directory.
-                const gh_file_list = (await gh.repos_contents(
-                    info.owner,
-                    info.repo,
-                    info.path ?? "",
-                    info.ref,
-                )) as Record<string, string>[];
+                try {
+                    const gh_file_list = await gh.repos_contents(
+                        info.owner,
+                        info.repo,
+                        info.path ?? "",
+                        info.ref,
+                    );
 
-                for (const gh_file of gh_file_list) {
-                    const name = gh_file["name"];
-                    const download_url = gh_file["download_url"];
-                    if (
-                        !name ||
-                        !download_url ||
-                        !kicad_extensions.includes(extension(name))
-                    ) {
-                        continue;
+                    // Check if response is an array (directory listing)
+                    if (!Array.isArray(gh_file_list)) {
+                        console.error(
+                            "GitHub API did not return an array. Rate limited or error:",
+                            gh_file_list,
+                        );
+                        throw new Error(
+                            "GitHub API rate limit exceeded or access forbidden. Try again later.",
+                        );
                     }
 
-                    files_to_urls.set(name, download_url);
+                    for (const gh_file of gh_file_list as Record<
+                        string,
+                        string
+                    >[]) {
+                        const name = gh_file["name"];
+                        const download_url = gh_file["download_url"];
+                        if (
+                            !name ||
+                            !download_url ||
+                            !kicad_extensions.includes(extension(name))
+                        ) {
+                            continue;
+                        }
+
+                        files_to_urls.set(name, download_url);
+                    }
+                } catch (e) {
+                    console.error(
+                        "Failed to fetch GitHub directory listing:",
+                        e,
+                    );
+                    throw e;
                 }
             }
         }
