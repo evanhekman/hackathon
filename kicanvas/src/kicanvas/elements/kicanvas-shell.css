@@ -74,10 +74,12 @@ section.overlay h1 {
     justify-content: center;
     gap: 0.2em;
     z-index: 2;
+    font-size: 6rem;
 }
 
 section.overlay h1 .logo-icon {
-    font-size: 4em;
+    height: 1.4em;
+    width: auto;
     filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.6));
     animation: flicker 3s ease-in-out infinite;
 }
@@ -91,7 +93,7 @@ section.overlay h1 .logo-icon {
 
 section.overlay h1 .logo-text {
     font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
-    font-size: 6em;
+    font-size: 1em;
     font-weight: 700;
     letter-spacing: -0.02em;
     color: #ffffff;
@@ -148,8 +150,15 @@ section.overlay .feature:hover {
 }
 
 section.overlay .feature-icon {
-    font-size: 1.8em;
+    font-size: 2em;
+    line-height: 1;
     filter: grayscale(1) brightness(1.5);
+}
+
+section.overlay img.feature-icon {
+    height: 2em;
+    width: auto;
+    filter: none;
 }
 
 section.overlay a {
@@ -200,10 +209,6 @@ section.overlay p.note {
     font-size: 0.9em;
     margin-top: 2em;
     z-index: 2;
-}
-
-section.overlay p.github img {
-    width: 2em;
 }
 
 kc-board-viewer,

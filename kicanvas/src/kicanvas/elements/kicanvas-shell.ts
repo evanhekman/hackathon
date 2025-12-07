@@ -142,7 +142,7 @@ class KiCanvasShellElement extends KCUIElement {
                     <div class="hero-glow"></div>
                     <div class="circuit-pattern"></div>
                     <h1>
-                        <span class="logo-icon">⚡</span>
+                        <img class="logo-icon" src="images/Grok_Logomark_Light.png" alt="Grok" />
                         <span class="logo-text">groki</span>
                     </h1>
                     <p class="tagline">
@@ -164,7 +164,7 @@ class KiCanvasShellElement extends KCUIElement {
                             <span>Circuit Summaries</span>
                         </div>
                         <div class="feature">
-                            <span class="feature-icon">🧠</span>
+                            <img class="feature-icon" src="images/xAI_Logomark_Light.png" alt="xAI" />
                             <span>Powered by Grok</span>
                         </div>
                     </div>
