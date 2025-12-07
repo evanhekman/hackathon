@@ -139,68 +139,44 @@ class KiCanvasShellElement extends KCUIElement {
         return html`
             <kc-ui-app>
                 <section class="overlay">
+                    <div class="hero-glow"></div>
+                    <div class="circuit-pattern"></div>
                     <h1>
-                        <img src="images/kicanvas.png" />
-                        KiCanvas
+                        <span class="logo-icon">⚡</span>
+                        <span class="logo-text">groki</span>
                     </h1>
-                    <p>
-                        KiCanvas is an
-                        <strong>interactive</strong>
-                        ,
-                        <strong>browser-based</strong>
-                        viewer for KiCAD schematics and boards. You can learn
-                        more from the
-                        <a href="https://kicanvas.org/home" target="_blank"
-                            >docs</a
-                        >. It's in
-                        <strong>alpha</strong>
-                        so please
-                        <a
-                            href="https://github.com/theacodes/kicanvas/issues/new/choose"
-                            target="_blank">
-                            report any bugs</a
-                        >!
+                    <p class="tagline">
+                        <strong>AI-powered</strong> schematic intelligence
                     </p>
+                    <p class="description">
+                        An <strong>interactive</strong> viewer for KiCAD
+                        schematics with <strong>Grok-powered</strong> component
+                        analysis. Get instant summaries, understand circuit
+                        blocks, and explore your designs like never before.
+                    </p>
+                    <div class="features">
+                        <div class="feature">
+                            <span class="feature-icon">🔍</span>
+                            <span>Component Analysis</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">💡</span>
+                            <span>Circuit Summaries</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🧠</span>
+                            <span>Powered by Grok</span>
+                        </div>
+                    </div>
                     <input
                         name="link"
                         type="text"
-                        placeholder="Paste a GitHub link..."
+                        placeholder="Paste a GitHub link to your schematic..."
                         autofocus />
-                    <p>or drag & drop your KiCAD files</p>
+                    <p class="drop-hint">or drag & drop your KiCAD files</p>
                     <p class="note">
-                        KiCanvas is
-                        <a
-                            href="https://github.com/theacodes/kicanvas"
-                            target="_blank"
-                            >free & open source</a
-                        >
-                        and supported by
-                        <a
-                            href="https://github.com/theacodes/kicanvas#special-thanks"
-                            >community donations</a
-                        >
-                        with significant support from
-                        <a href="https://partsbox.com/" target="_blank"
-                            >PartsBox</a
-                        >,
-                        <a href="https://blues.io/" target="_blank">Blues</a>,
-                        <a href="https://blog.mithis.net/" target="_blank"
-                            >Mithro</a
-                        >,
-                        <a href="https://github.com/jeremysf">Jeremy Gordon</a>,
-                        &
-                        <a href="https://github.com/jamesneal" target="_blank"
-                            >James Neal</a
-                        >. KiCanvas runs entirely within your browser, so your
-                        files don't ever leave your machine.
-                    </p>
-                    <p class="github">
-                        <a
-                            href="https://github.com/theacodes/kicanvas"
-                            target="_blank"
-                            title="Visit on GitHub">
-                            <img src="images/github-mark-white.svg" />
-                        </a>
+                        Your files are processed locally in your browser.
+                        Nothing ever leaves your machine.
                     </p>
                 </section>
                 <main>${this.#schematic_app} ${this.#board_app}</main>

@@ -34,59 +34,172 @@ section.overlay {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: var(--gradient-purple-blue-dark);
+    background: #000000;
+    overflow: hidden;
+}
+
+.hero-glow {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    pointer-events: none;
+    animation: pulse 5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; transform: translate(-50%, -55%) scale(1); }
+    50% { opacity: 0.8; transform: translate(-50%, -55%) scale(1.05); }
+}
+
+.circuit-pattern {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0.04;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
 }
 
 section.overlay h1 {
     display: flex;
-    margin: 0 auto;
+    margin: 0 auto 0.2em;
     align-items: center;
     justify-content: center;
-    font-size: 5em;
-    font-weight: 300;
-    text-shadow: 0 0 5px var(--gradient-purple-red);
+    gap: 0.2em;
+    z-index: 2;
 }
 
-section.overlay h1 img {
-    width: 1.5em;
+section.overlay h1 .logo-icon {
+    font-size: 4em;
+    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.6));
+    animation: flicker 3s ease-in-out infinite;
 }
 
-section.overlay p {
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+    75% { opacity: 1; }
+    80% { opacity: 0.9; }
+}
+
+section.overlay h1 .logo-text {
+    font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+    font-size: 6em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    text-shadow: 0 0 80px rgba(255, 255, 255, 0.4);
+}
+
+section.overlay p.tagline {
+    font-size: 1.8em;
+    color: #888888;
+    margin-bottom: 0.5em;
+    z-index: 2;
+}
+
+section.overlay p.description {
     text-align: center;
-    font-size: 1.5em;
-    max-width: 50%;
+    font-size: 1.2em;
+    max-width: 600px;
+    color: #aaaaaa;
+    line-height: 1.6;
+    z-index: 2;
 }
 
 section.overlay strong {
-    background: var(--gradient-purple-red-highlight);
-    -webkit-background-clip: text;
-    -moz-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+section.overlay .features {
+    display: flex;
+    gap: 2em;
+    margin: 2em 0;
+    z-index: 2;
+}
+
+section.overlay .feature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5em;
+    padding: 1em 1.5em;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    color: #aaaaaa;
+    font-size: 0.95em;
+    transition: all 0.3s ease;
+}
+
+section.overlay .feature:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    color: #ffffff;
+}
+
+section.overlay .feature-icon {
+    font-size: 1.8em;
+    filter: grayscale(1) brightness(1.5);
 }
 
 section.overlay a {
-    color: #81eeff;
+    color: #ffffff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity 0.2s ease;
 }
 
 section.overlay a:hover {
-    color: #a3f3ff;
+    opacity: 0.7;
 }
 
 section.overlay input {
-    font-size: 1.5em;
-    color: var(--fg);
-    background: var(--gradient-purple-red);
-    max-width: 50%;
+    font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+    font-size: 1.1em;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1em 1.5em;
+    width: 100%;
+    max-width: 500px;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+section.overlay input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 section.overlay input::placeholder {
-    color: var(--fg);
+    color: #555555;
+}
+
+section.overlay p.drop-hint {
+    font-size: 1em;
+    color: #555555;
+    margin-top: 1em;
+    z-index: 2;
 }
 
 section.overlay p.note {
-    color: var(--input-placeholder);
-    font-size: 1em;
+    color: #444444;
+    font-size: 0.9em;
+    margin-top: 2em;
+    z-index: 2;
 }
 
 section.overlay p.github img {
