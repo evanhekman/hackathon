@@ -1,0 +1,33 @@
+site_name: KiCanvas Documentation
+site_url: https://docs.kicanvas.org
+copyright: "© 2023 Alethea Katherine Flowers, Licensed under Creative Commons CC BY-SA 4.0"
+repo_url: "https://github.com/theacodes/kicanvas"
+edit_uri: edit/main/docs/docs
+theme:
+    name: material
+    custom_dir: overrides
+    logo: icon.png
+    favicon: icon.png
+    palette:
+        scheme: slate
+        primary: teal
+        accent: light blue
+    font:
+        text: Nunito
+        code: IBM Plex Mono
+markdown_extensions:
+    - admonition
+    - def_list
+    - attr_list
+    - footnotes
+    - pymdownx.highlight
+    - pymdownx.superfences
+    - pymdownx.magiclink
+    - md_in_html
+nav:
+    - "Home": home.md
+    - "Standalone App": index.md
+    - "Embedding": embedding.md
+    - "Roadmap": roadmap.md
+    - "Development": development.md
+    - "License": license.md
