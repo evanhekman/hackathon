@@ -39,7 +39,7 @@
         "build:no-check": "node scripts/build.js",
         "build:font": "node scripts/build-font.js",
         "build:sprites": "node scripts/build-sprites.js",
-        "build": "tsc -p tsconfig.json && node scripts/build.js && cp build/kicanvas.js debug/kicanvas/kicanvas.js",
+        "build": "tsc -p tsconfig.json && node scripts/build.js && mkdir -p debug/kicanvas && cp build/kicanvas.js debug/kicanvas/kicanvas.js",
         "clean": "rm -rf build && rm -rf debug/kicanvas"
     },
     "repository": {
