@@ -397,8 +397,8 @@ export const queryInputStyles = css`
         font-family: inherit;
         outline: none;
         resize: none;
-        min-height: 40px;
-        max-height: 80px;
+        min-height: 160px;
+        max-height: 200px;
         transition: all 0.15s ease;
         box-sizing: border-box;
     }
