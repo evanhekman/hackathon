@@ -314,6 +314,7 @@ export class SchematicViewer extends DocumentViewer<
         const unionAll = (roots: string[]) => {
             if (roots.length < 2) return;
             const [first, ...rest] = roots;
+            if (!first) return;
             for (const r of rest) {
                 union(first, r);
             }

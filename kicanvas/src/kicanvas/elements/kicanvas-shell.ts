@@ -268,7 +268,7 @@ class KiCanvasShellElement extends KCUIElement {
 
     private loadExample(e: MouseEvent): void {
         const button = e.currentTarget as HTMLButtonElement;
-        const repoUrl = button.dataset.repo;
+        const repoUrl = button.dataset['repo'];
         if (!repoUrl) return;
         this.link_input.value = repoUrl;
         const repo = GrokiAPI.extractRepoFromUrl(repoUrl);
