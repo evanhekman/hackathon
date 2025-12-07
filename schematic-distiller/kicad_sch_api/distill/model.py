@@ -24,13 +24,14 @@ class DistilledComponent:
     lib_id: str
     value: str
     position: Tuple[float, float]
+    sheet_path: Optional[str] = None
     footprint: Optional[str] = None
     properties: Dict[str, str] = field(default_factory=dict)
     pins: List[DistilledPin] = field(default_factory=list)
     category: str = "other"
 
     def to_dict(self) -> Dict:
-        return {
+        data = {
             "reference": self.reference,
             "lib_id": self.lib_id,
             "value": self.value,
@@ -40,6 +41,11 @@ class DistilledComponent:
             "category": self.category,
             "pins": [pin.to_dict() for pin in self.pins],
         }
+
+        if self.sheet_path is not None:
+            data["sheet_path"] = self.sheet_path
+
+        return data
 
 
 @dataclass

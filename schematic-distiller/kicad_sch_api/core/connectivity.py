@@ -8,7 +8,7 @@ hierarchical connections, and power symbols.
 import logging
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from .geometry import points_equal
 from .types import Junction, Label, LabelType, Point, SchematicSymbol, Wire
@@ -100,6 +100,8 @@ class ConnectivityAnalyzer:
         self._point_to_net: Dict[Tuple[float, float], Net] = {}
         self._pin_to_net: Dict[PinConnection, Net] = {}
         self._label_name_to_nets: Dict[str, List[Net]] = defaultdict(list)
+        self._sheet_links: List[Tuple[Any, Any, Dict[str, Any]]] = []  # (parent_sch, child_sch, sheet_data)
+        self._schematic_contexts: List[Tuple[Any, str]] = []  # (schematic, hierarchy_path)
 
         logger.info(f"Initialized ConnectivityAnalyzer (tolerance={tolerance}mm)")
 
@@ -122,6 +124,7 @@ class ConnectivityAnalyzer:
             logger.info(f"Analyzing {len(schematics)} schematics (hierarchical)")
         else:
             schematics = [schematic]
+            self._schematic_contexts = [(schematic, "/")]
 
         # Step 1: Build component pin positions from all schematics
         all_pin_positions = {}
@@ -152,7 +155,7 @@ class ConnectivityAnalyzer:
 
         # Step 5: Process hierarchical connections (sheet pins ↔ hierarchical labels)
         if hierarchical and len(schematics) > 1:
-            self._process_hierarchical_connections(schematic, schematics)
+            self._process_hierarchical_connections()
             logger.info(f"After hierarchical connections: {len(self.nets)} nets")
 
         # Step 6: Process power symbols (implicit global connections across ALL sheets)
@@ -532,7 +535,7 @@ class ConnectivityAnalyzer:
 
     def _load_hierarchical_schematics(self, root_schematic):
         """
-        Load root schematic and all child schematics.
+        Load root schematic and all child schematics (recursively).
 
         Args:
             root_schematic: Root schematic object
@@ -542,79 +545,68 @@ class ConnectivityAnalyzer:
         """
         from pathlib import Path
 
-        schematics = [root_schematic]
+        # Reset tracking
+        self._sheet_links = []
+        self._schematic_contexts = []
 
-        # Check if root schematic has hierarchical sheets
-        if not hasattr(root_schematic, "_data") or "sheets" not in root_schematic._data:
-            return schematics
+        schematics: List[Any] = []
 
-        sheets = root_schematic._data.get("sheets", [])
+        def recurse(parent_schematic, parent_path: Optional[Path], hierarchy_path: str):
+            schematics.append(parent_schematic)
+            self._schematic_contexts.append((parent_schematic, hierarchy_path))
 
-        # Load each child schematic
-        root_path = Path(root_schematic.file_path) if root_schematic.file_path else None
+            # Collect sheets from parent
+            sheets = []
+            if hasattr(parent_schematic, "_data"):
+                sheets = parent_schematic._data.get("sheets", [])
 
-        for sheet in sheets:
-            sheet_filename = sheet.get("filename")
-            if not sheet_filename:
-                continue
+            for sheet in sheets:
+                sheet_filename = sheet.get("filename")
+                if not sheet_filename:
+                    continue
 
-            # Build path to child schematic
-            if root_path:
-                child_path = root_path.parent / sheet_filename
-            else:
-                child_path = Path(sheet_filename)
+                # Build path to child schematic
+                if parent_path:
+                    child_path = parent_path.parent / sheet_filename
+                else:
+                    child_path = Path(sheet_filename)
 
-            if child_path.exists():
+                if not child_path.exists():
+                    logger.warning(f"Child schematic not found: {child_path}")
+                    continue
+
                 try:
-                    # Import Schematic class - use absolute import to avoid circular dependency
                     import kicad_sch_api as ksa
 
-                    child_sch = ksa.Schematic.load(str(child_path))
-                    schematics.append(child_sch)
-                    logger.info(f"Loaded child schematic: {sheet_filename}")
+                    child_schematic = ksa.Schematic.load(str(child_path))
+                    self._sheet_links.append((parent_schematic, child_schematic, sheet))
+
+                    # Hierarchy path uses sheet UUID when available
+                    sheet_uuid = sheet.get("uuid") or sheet_filename
+                    child_h_path = f"{hierarchy_path}{sheet_uuid}/"
+
+                    recurse(child_schematic, child_path, child_h_path)
                 except Exception as e:
                     logger.warning(f"Could not load child schematic {sheet_filename}: {e}")
-            else:
-                logger.warning(f"Child schematic not found: {child_path}")
 
+        root_path = Path(root_schematic.file_path) if root_schematic.file_path else None
+        recurse(root_schematic, root_path, "/")
         return schematics
 
-    def _process_hierarchical_connections(self, root_schematic, all_schematics):
+    def _process_hierarchical_connections(self):
         """
         Process hierarchical connections between parent and child sheets.
 
         Connects sheet pins in parent to hierarchical labels in child sheets.
-
-        Args:
-            root_schematic: Root schematic with hierarchical sheets
-            all_schematics: List of all schematics (root + children)
         """
-        from pathlib import Path
-
-        if not hasattr(root_schematic, "_data") or "sheets" not in root_schematic._data:
+        if not self._sheet_links:
             return
 
-        sheets = root_schematic._data.get("sheets", [])
-
-        for sheet_data in sheets:
-            sheet_filename = sheet_data.get("filename")
+        for parent_sch, child_sch, sheet_data in self._sheet_links:
             sheet_pins = sheet_data.get("pins", [])
-
-            if not sheet_filename or not sheet_pins:
+            if not sheet_pins:
                 continue
 
-            # Find the child schematic
-            child_sch = None
-            for sch in all_schematics:
-                if sch.file_path and Path(sch.file_path).name == sheet_filename:
-                    child_sch = sch
-                    break
-
-            if not child_sch:
-                logger.warning(f"Child schematic not found for sheet: {sheet_filename}")
-                continue
-
-            # For each sheet pin, find matching hierarchical label in child
             for pin_data in sheet_pins:
                 pin_name = pin_data.get("name")
                 pin_position = pin_data.get("position")
@@ -639,8 +631,8 @@ class ConnectivityAnalyzer:
                     continue
 
                 # Find matching hierarchical label in child schematic
-                for hier_label in child_sch.hierarchical_labels:
-                    if hier_label.text == pin_name:
+                for hier_label in getattr(child_sch, "hierarchical_labels", []):
+                    if getattr(hier_label, "text", None) == pin_name:
                         label_pos = hier_label.position
 
                         # Find net at hierarchical label position in child
@@ -666,7 +658,8 @@ class ConnectivityAnalyzer:
                             for point in child_net.points:
                                 self._point_to_net[point] = parent_net
 
-                            self.nets.remove(child_net)
+                            if child_net in self.nets:
+                                self.nets.remove(child_net)
 
                         break
 
@@ -707,3 +700,12 @@ class ConnectivityAnalyzer:
             for pin in net.pins
             if not (pin.reference == reference and pin.pin_number == pin_number)
         ]
+
+    def get_schematics(self) -> List[Tuple[Any, str]]:
+        """
+        Get all schematics analyzed with their hierarchy paths.
+
+        Returns:
+            List of (schematic, hierarchy_path) tuples
+        """
+        return list(self._schematic_contexts)

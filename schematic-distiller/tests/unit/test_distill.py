@@ -187,3 +187,34 @@ def test_proximity_ic_cap_extended_radius():
 
     assert proximities, "IC-cap pair within extended radius should be included"
 
+
+def test_distill_hierarchical_multisheet():
+    """Ensure distillation traverses hierarchical sheets and preserves net connectivity."""
+    sch_path = (
+        Path(__file__).resolve().parent.parent
+        / "reference_kicad_projects"
+        / "connectivity"
+        / "ps2_hierarchical_power"
+        / "ps2_hierarchical_power.kicad_sch"
+    )
+
+    schematic = ksa.load_schematic(str(sch_path))
+    distilled = distill_schematic(schematic, DistillationConfig(proximity_radius_mm=50.0, hierarchical=True))
+    data = distilled.to_dict()
+
+    # Components include child-sheet parts with sheet_path metadata
+    components = data["components"]
+    refs = {comp["reference"] for comp in components}
+    assert "R2" in refs, "Child-sheet component R2 should be included"
+
+    r2 = next(comp for comp in components if comp["reference"] == "R2")
+    assert "sheet_path" in r2 and r2["sheet_path"], "Components should include sheet_path when hierarchical"
+
+    # Nets are fully connected across sheet boundaries
+    nets = data["nets"]
+    assert "DATA" in nets, "DATA net should be present in distilled nets"
+    data_net = nets["DATA"]
+
+    assert "R1" in data_net and any(pin.get("Pin") == "2" for pin in data_net["R1"]), "R1.2 should be on DATA net"
+    assert "R2" in data_net and any(pin.get("Pin") == "1" for pin in data_net["R2"]), "R2.1 should be on DATA net"
+

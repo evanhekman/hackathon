@@ -44,12 +44,33 @@ def distill_schematic(schematic, distill_config: Optional[DistillationConfig] = 
     analyzer = ConnectivityAnalyzer(tolerance=config.tolerance.position_tolerance)
     nets = analyzer.analyze(schematic, hierarchical=cfg.hierarchical)
 
-    pin_to_net = _build_pin_net_map(nets)
-    real_symbols = [comp for comp in schematic.components if _is_real_symbol(comp)]
+    # Gather schematics and hierarchy paths (if available)
+    if cfg.hierarchical and hasattr(analyzer, "get_schematics"):
+        schematic_contexts = analyzer.get_schematics()
+    else:
+        schematic_contexts = [(schematic, "/")]
 
-    distilled_components = [_distill_component(comp, pin_to_net) for comp in real_symbols]
+    pin_to_net = _build_pin_net_map(nets)
+
+    distilled_components: List[DistilledComponent] = []
+    for sch, sheet_path in schematic_contexts:
+        real_symbols = [comp for comp in sch.components if _is_real_symbol(comp)]
+        for comp in real_symbols:
+            distilled_components.append(
+                _distill_component(comp, pin_to_net, sheet_path if cfg.hierarchical else None)
+            )
+
     distilled_nets = {net.name or f"Net-{idx+1}": _distill_net(net) for idx, net in enumerate(nets)}
-    proximities = _compute_proximities(distilled_components, cfg.proximity_radius_mm, cfg.weight_multipliers)
+
+    # Compute proximities per sheet to avoid cross-sheet noise
+    proximities: List[ProximityEdge] = []
+    comps_by_sheet: Dict[str, List[DistilledComponent]] = {}
+    for comp in distilled_components:
+        key = comp.sheet_path or "/"
+        comps_by_sheet.setdefault(key, []).append(comp)
+
+    for comps in comps_by_sheet.values():
+        proximities.extend(_compute_proximities(comps, cfg.proximity_radius_mm, cfg.weight_multipliers))
 
     return DistilledSchematic(components=distilled_components, nets=distilled_nets, proximities=proximities)
 
@@ -64,7 +85,9 @@ def _build_pin_net_map(nets: Iterable[Net]) -> Dict[Tuple[str, str], str]:
     return mapping
 
 
-def _distill_component(component: SchematicSymbol, pin_to_net: Dict[Tuple[str, str], str]) -> DistilledComponent:
+def _distill_component(
+    component: SchematicSymbol, pin_to_net: Dict[Tuple[str, str], str], sheet_path: Optional[str] = None
+) -> DistilledComponent:
     pin_positions = list_component_pins(component)
     pin_name_map = {pin.number: pin.name for pin in component.pins}
 
@@ -123,6 +146,7 @@ def _distill_component(component: SchematicSymbol, pin_to_net: Dict[Tuple[str, s
         pins=distilled_pins,
         position=(component.position.x, component.position.y),
         category=_classify_component(component),
+        sheet_path=sheet_path,
     )
 
 
