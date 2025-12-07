@@ -58,6 +58,20 @@ impl Message {
     }
 }
 
+/// Reasoning effort level for thinking mode
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum ReasoningEffort {
+    Low,
+    High,
+}
+
+/// Reasoning configuration for thinking mode
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ReasoningConfig {
+    pub effort: ReasoningEffort,
+}
+
 /// Chat completion request for XAI API
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ChatCompletionRequest {
@@ -65,6 +79,8 @@ pub struct ChatCompletionRequest {
     pub model: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stream: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reasoning: Option<ReasoningConfig>,
 }
 
 impl ChatCompletionRequest {
@@ -74,6 +90,7 @@ impl ChatCompletionRequest {
             messages,
             model,
             stream: None,
+            reasoning: None,
         }
     }
 
@@ -83,6 +100,17 @@ impl ChatCompletionRequest {
             messages,
             model,
             stream: Some(stream),
+            reasoning: None,
+        }
+    }
+
+    /// Create a new request with streaming and reasoning (thinking mode)
+    pub fn with_reasoning(messages: Vec<Message>, model: String, stream: bool, effort: ReasoningEffort) -> Self {
+        Self {
+            messages,
+            model,
+            stream: Some(stream),
+            reasoning: Some(ReasoningConfig { effort }),
         }
     }
 

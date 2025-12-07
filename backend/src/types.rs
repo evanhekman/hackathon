@@ -212,6 +212,9 @@ pub struct GrokSelectionStreamRequest {
     pub query: String,
     /// Pre-distilled schematic data (optional - will fetch if not provided)
     pub distilled: Option<serde_json::Value>,
+    /// Enable thinking/reasoning mode (shows chain-of-thought)
+    #[serde(default)]
+    pub thinking_mode: bool,
 }
 
 #[derive(Debug, Serialize, ToSchema)]

@@ -32,6 +32,7 @@ export interface GrokStreamRequest {
     component_ids: string[];
     query: string;
     distilled: DistilledSchematic;
+    thinking_mode: boolean;
 }
 
 /**
@@ -153,6 +154,7 @@ export class GrokAPIService {
      * @param components - Selected components to query about
      * @param query - The user's question
      * @param callbacks - Callbacks for streaming events
+     * @param thinkingMode - Whether to enable reasoning/thinking mode
      * @returns Promise that resolves when streaming is complete
      */
     async streamQuery(
@@ -160,6 +162,7 @@ export class GrokAPIService {
         components: SelectedComponent[],
         query: string,
         callbacks: StreamCallbacks,
+        thinkingMode: boolean = false,
     ): Promise<void> {
         const { repo, commit } = context;
 
@@ -202,6 +205,7 @@ export class GrokAPIService {
                         component_ids: componentIds,
                         query,
                         distilled,
+                        thinking_mode: thinkingMode,
                     } satisfies GrokStreamRequest),
                     signal: abortController.signal,
                 },

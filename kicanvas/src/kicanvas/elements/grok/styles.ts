@@ -461,7 +461,7 @@ export const queryInputStyles = css`
     /* Inline message bubbles */
     .message {
         margin-bottom: 8px;
-        padding: 12px 14px;
+        padding: 10px 12px;
         border-radius: 8px;
         animation: fadeIn 0.15s ease;
     }
@@ -474,11 +474,16 @@ export const queryInputStyles = css`
     .assistant-bubble {
         background: rgba(255, 255, 255, 0.04);
         border-left: 3px solid rgba(255, 206, 84, 0.5);
+        padding: 12px 14px;
     }
 
     .user-bubble {
-        background: rgba(96, 165, 250, 0.1);
-        border-left: 3px solid rgba(96, 165, 250, 0.5);
+        background: rgba(96, 165, 250, 0.08);
+        border-left: 2px solid rgba(96, 165, 250, 0.4);
+        padding: 8px 12px;
+        font-size: 13px;
+        line-height: 1.4;
+        color: rgba(255, 255, 255, 0.85);
     }
 
     .error-bubble {
@@ -493,6 +498,94 @@ export const queryInputStyles = css`
         padding: 12px 14px;
         background: rgba(20, 20, 20, 0.8);
         border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Thinking mode toggle row */
+    .thinking-toggle-row {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 8px;
+    }
+
+    .thinking-toggle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 11px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .thinking-toggle kc-ui-icon {
+        font-size: 14px;
+    }
+
+    .thinking-toggle:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .thinking-toggle.active {
+        background: rgba(147, 51, 234, 0.2);
+        border-color: rgba(147, 51, 234, 0.4);
+        color: rgb(192, 132, 252);
+    }
+
+    .thinking-toggle.active:hover {
+        background: rgba(147, 51, 234, 0.3);
+    }
+
+    .thinking-toggle:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Thinking status indicator (shown while thinking mode is active and processing) */
+    .thinking-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        background: rgba(147, 51, 234, 0.15);
+        border: 1px solid rgba(147, 51, 234, 0.3);
+        border-radius: 16px;
+        color: rgb(192, 132, 252);
+        font-size: 11px;
+        animation: thinking-pulse 2s ease-in-out infinite;
+    }
+
+    .thinking-status kc-ui-icon {
+        font-size: 14px;
+        animation: thinking-spin 3s linear infinite;
+    }
+
+    @keyframes thinking-pulse {
+        0%, 100% { opacity: 0.7; }
+        50% { opacity: 1; }
+    }
+
+    @keyframes thinking-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Disabled state for input area */
+    .chat-input-area.disabled {
+        opacity: 0.7;
+    }
+
+    .chat-input-container.disabled {
+        background: rgba(255, 255, 255, 0.02);
+        border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .chat-input-container.disabled .query-input {
+        cursor: not-allowed;
     }
 
     .chat-input-container {
@@ -513,7 +606,7 @@ export const queryInputStyles = css`
 
     .query-input {
         flex: 1;
-        padding: 0;
+        padding: 4px 0;
         background: transparent;
         border: none;
         color: rgba(255, 255, 255, 0.9);
@@ -521,13 +614,15 @@ export const queryInputStyles = css`
         font-family: inherit;
         outline: none;
         resize: none;
-        min-height: 20px;
-        max-height: 80px;
-        line-height: 1.4;
+        min-height: 36px;
+        max-height: 120px;
+        line-height: 1.6;
+        overflow-y: auto;
     }
 
     .query-input::placeholder {
         color: rgba(255, 255, 255, 0.35);
+        line-height: 1.6;
     }
 
     .send-button {
@@ -568,11 +663,41 @@ export const queryInputStyles = css`
 export const responseMarkdownStyles = grokMarkdownStyles;
 
 export const responseStyles = css`
-    .response-content {
+    .response-content,
+    .response-content-static,
+    .streaming-response {
         font-size: 13px;
         line-height: 1.6;
         color: rgba(255, 255, 255, 0.9);
         word-wrap: break-word;
+    }
+    
+    .response-content-static {
+        /* Static content in conversation history */
+    }
+
+    /* Thinking/reasoning content - shows chain of thought */
+    .response-content .thinking-block {
+        margin: 8px 0 12px 0;
+        padding: 10px 12px;
+        background: rgba(147, 51, 234, 0.08);
+        border: 1px solid rgba(147, 51, 234, 0.2);
+        border-radius: 8px;
+        font-size: 12px;
+        color: rgba(192, 132, 252, 0.9);
+        font-style: italic;
+    }
+
+    .response-content .thinking-block::before {
+        content: '💭 Thinking...';
+        display: block;
+        font-weight: 600;
+        font-style: normal;
+        margin-bottom: 6px;
+        color: rgba(147, 51, 234, 0.8);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .cursor {
@@ -602,6 +727,15 @@ export const responseStyles = css`
         gap: 10px;
         color: rgba(255, 255, 255, 0.6);
         font-size: 13px;
+    }
+
+    /* Thinking mode has purple accent */
+    .loading-indicator.thinking-mode {
+        color: rgb(192, 132, 252);
+    }
+
+    .loading-indicator.thinking-mode .loading-dots span {
+        background: rgba(147, 51, 234, 0.8);
     }
 
     .loading-dots {

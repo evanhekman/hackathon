@@ -58,6 +58,11 @@ export class KCGrokChatPanelElement extends KCUIElement {
     private _searchHighlightIndex: number = -1; // Keyboard navigation index for search results
     private _searchInputFocused: boolean = false; // Track if search input is focused
     private _controlsCollapsed: boolean = false; // Collapse quick actions for more response space
+    private _thinkingMode: boolean = false; // Enable reasoning/thinking mode for more detailed analysis
+    private _hasAutoCollapsed: boolean = false; // Track if we've auto-collapsed once (to not annoy user)
+    
+    // Conversation history
+    private _conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }> = [];
 
     // Context
     private _viewer: Viewer | null = null;
@@ -121,12 +126,12 @@ export class KCGrokChatPanelElement extends KCUIElement {
             this.removeAttribute('data-search-open');
         }
 
-        // Ensure response content is rendered as HTML after re-render
-        if (this._responseContent && !this._isLoading && !this._error) {
-            const responseEl = this.renderRoot.querySelector(".response-content");
-            if (responseEl) {
-                responseEl.innerHTML = this._formatContent(this._responseContent) +
-                    (this.streaming ? '<span class="cursor"></span>' : '');
+        // Ensure streaming response content is rendered as HTML after re-render
+        if (this._responseContent && this.streaming && !this._isLoading && !this._error) {
+            const streamingEl = this.renderRoot.querySelector(".streaming-response");
+            if (streamingEl) {
+                streamingEl.innerHTML = this._formatContent(this._responseContent) +
+                    '<span class="cursor"></span>';
             }
         }
     }
@@ -396,6 +401,14 @@ export class KCGrokChatPanelElement extends KCUIElement {
         this.addDisposable(
             delegate(root, ".controls-toggle", "click", () => {
                 this._controlsCollapsed = !this._controlsCollapsed;
+                this._scheduleUpdate();
+            }),
+        );
+
+        // Toggle thinking mode
+        this.addDisposable(
+            delegate(root, ".thinking-toggle", "click", () => {
+                this._thinkingMode = !this._thinkingMode;
                 this._scheduleUpdate();
             }),
         );
@@ -818,7 +831,7 @@ export class KCGrokChatPanelElement extends KCUIElement {
     // =========================================================================
 
     /**
-     * Handle preset click - auto-submits the query immediately
+     * Handle preset click - auto-submits the query immediately without copying to input
      */
     private async _selectPreset(presetId: string) {
         // Find preset in both arrays
@@ -835,25 +848,43 @@ export class KCGrokChatPanelElement extends KCUIElement {
             return;
         }
 
-        // Set the preset and query
+        // Set the preset (but don't copy query to input box)
         this._selectedPreset = presetId;
-        this._customQuery = preset.query;
+        
+        // Auto-collapse quick actions once to give more space for the response
+        // Only do this once so we don't annoy the user if they reopen it
+        if (!this._hasAutoCollapsed && !this._controlsCollapsed) {
+            this._controlsCollapsed = true;
+            this._hasAutoCollapsed = true;
+        }
+        
         this._scheduleUpdate();
 
-        // Auto-submit the query
-        await this._submitQuery();
+        // Submit the preset query directly
+        await this._submitQuery(preset.query);
     }
 
-    private async _submitQuery() {
-        const query = this._customQuery.trim();
+    private async _submitQuery(overrideQuery?: string) {
+        const query = (overrideQuery ?? this._customQuery).trim();
         if (!query) return;
+        
+        // Clear input after submitting (if it was from the input box)
+        if (!overrideQuery) {
+            this._customQuery = "";
+        }
+
+        // Add user message to conversation history
+        this._conversationHistory.push({ role: 'user', content: query });
 
         this._isLoading = true;
         this._error = null;
         this._responseContent = "";
         this.streaming = true;
         this._shouldAutoScroll = true; // Reset auto-scroll for new query
-        this._scheduleUpdate();
+        
+        // Force immediate render to show loading state right away
+        // Don't use _scheduleUpdate which batches via requestAnimationFrame
+        super.update();
 
         await grokAPI.streamQuery(
             this._context,
@@ -866,11 +897,11 @@ export class KCGrokChatPanelElement extends KCUIElement {
                 },
                 onChunk: (content) => {
                     this._responseContent = content;
-                    // Update response content directly for streaming performance
-                    const responseEl = this.renderRoot.querySelector(".response-content");
-                    if (responseEl) {
-                        responseEl.innerHTML = this._formatContent(content) + 
-                            (this.streaming ? '<span class="cursor"></span>' : '');
+                    // Update streaming response content directly for performance
+                    const streamingEl = this.renderRoot.querySelector(".streaming-response");
+                    if (streamingEl) {
+                        streamingEl.innerHTML = this._formatContent(content) + 
+                            '<span class="cursor"></span>';
                         this._scrollResponseToBottom();
                     } else {
                         this._scheduleUpdate();
@@ -878,11 +909,11 @@ export class KCGrokChatPanelElement extends KCUIElement {
                 },
                 onComplete: () => {
                     this.streaming = false;
-                    // Final update to remove cursor and ensure content persists
-                    const responseEl = this.renderRoot.querySelector(".response-content");
-                    if (responseEl) {
-                        responseEl.innerHTML = this._formatContent(this._responseContent);
+                    // Add completed response to conversation history
+                    if (this._responseContent) {
+                        this._conversationHistory.push({ role: 'assistant', content: this._responseContent });
                     }
+                    this._responseContent = ""; // Clear streaming content
                     this._scheduleUpdate();
                 },
                 onError: (error) => {
@@ -892,6 +923,7 @@ export class KCGrokChatPanelElement extends KCUIElement {
                     this._scheduleUpdate();
                 },
             },
+            this._thinkingMode,
         );
     }
 
@@ -1082,42 +1114,81 @@ export class KCGrokChatPanelElement extends KCUIElement {
     }
 
     private _renderConversation() {
-        const canSubmit = this._customQuery.trim().length > 0 && !this.streaming;
+        const isProcessing = this._isLoading || this.streaming;
+        const canSubmit = this._customQuery.trim().length > 0 && !isProcessing;
+        
+        // Show loading when:
+        // 1. _isLoading is true (waiting for server to respond)
+        // 2. OR streaming is true but no content yet (stream started, waiting for first chunk)
+        const showLoading = this._isLoading || (this.streaming && !this._responseContent);
+
+        // Determine the loading message based on thinking mode and state
+        const loadingMessage = this._thinkingMode 
+            ? (this._isLoading ? 'Connecting...' : 'Thinking...') 
+            : (this._isLoading ? 'Connecting...' : 'Analyzing...');
+
+        const hasConversation = this._conversationHistory.length > 0 || this.streaming || showLoading;
 
         return html`
             <div class="conversation-section">
                 <div class="conversation-scroll">
                     ${this._error
                         ? html`<div class="message error-bubble">${this._error}</div>`
-                        : this._isLoading
+                        : !hasConversation
                         ? html`
-                            <div class="message assistant-bubble">
-                                <div class="loading-indicator">
-                                    <div class="loading-dots">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </div>
-                                    <span>Analyzing...</span>
-                                </div>
-                            </div>
-                          `
-                        : this._responseContent
-                        ? html`<div class="message assistant-bubble"><div class="response-content"></div></div>`
-                        : html`
                             <div class="empty-state">
                                 <div class="empty-state-text">
                                     Select a quick action above or ask a question below
                                 </div>
                             </div>
+                          `
+                        : html`
+                            ${this._conversationHistory.map((msg) => html`
+                                <div class="message ${msg.role === 'user' ? 'user-bubble' : 'assistant-bubble'}">
+                                    ${msg.role === 'user' 
+                                        ? msg.content 
+                                        : html`<div class="response-content-static">${this._formatContentToHTML(msg.content)}</div>`}
+                                </div>
+                            `)}
+                            ${showLoading ? html`
+                                <div class="message assistant-bubble">
+                                    <div class="loading-indicator ${this._thinkingMode ? 'thinking-mode' : ''}">
+                                        <div class="loading-dots">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                        <span>${loadingMessage}</span>
+                                    </div>
+                                </div>
+                            ` : this._responseContent ? html`
+                                <div class="message assistant-bubble">
+                                    <div class="streaming-response"></div>
+                                </div>
+                            ` : null}
                           `}
                 </div>
-                <div class="chat-input-area">
-                    <div class="chat-input-container">
+                <div class="chat-input-area ${isProcessing ? 'disabled' : ''}">
+                    <div class="thinking-toggle-row">
+                        ${isProcessing && this._thinkingMode 
+                            ? html`<div class="thinking-status">
+                                <kc-ui-icon>psychology_alt</kc-ui-icon>
+                                <span>Deep thinking in progress...</span>
+                              </div>`
+                            : html`<button 
+                                class="thinking-toggle ${this._thinkingMode ? 'active' : ''}"
+                                title="${this._thinkingMode ? 'Thinking mode ON - shows reasoning process' : 'Thinking mode OFF - faster responses'}"
+                                ?disabled="${isProcessing}">
+                                <kc-ui-icon>${this._thinkingMode ? 'psychology_alt' : 'bolt'}</kc-ui-icon>
+                                <span>${this._thinkingMode ? 'Deep Thinking' : 'Fast Mode'}</span>
+                            </button>`}
+                    </div>
+                    <div class="chat-input-container ${isProcessing ? 'disabled' : ''}">
                         <textarea
                             class="query-input"
-                            placeholder="Ask about the schematic..."
-                            rows="1"></textarea>
+                            placeholder="${isProcessing ? 'Waiting for response...' : 'Ask about the schematic...'}"
+                            rows="2"
+                            ?disabled="${isProcessing}"></textarea>
                         <button class="send-button" ?disabled="${!canSubmit}">
                             <kc-ui-icon>send</kc-ui-icon>
                         </button>
@@ -1125,6 +1196,13 @@ export class KCGrokChatPanelElement extends KCUIElement {
                 </div>
             </div>
         `;
+    }
+    
+    /** Format content to HTML element (for static conversation history) */
+    private _formatContentToHTML(content: string): HTMLElement {
+        const div = document.createElement('div');
+        div.innerHTML = this._formatContent(content);
+        return div;
     }
 
     // =========================================================================

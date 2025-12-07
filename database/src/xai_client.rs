@@ -41,6 +41,8 @@ pub struct Choice {
 pub struct StreamDelta {
     pub role: Option<String>,
     pub content: Option<String>,
+    /// Reasoning/thinking content (for thinking mode)
+    pub reasoning_content: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -397,6 +399,12 @@ impl XaiClient {
                                     Ok(chunk) => {
                                         if let Some(choice) = chunk.choices.first() {
                                             if let Some(delta) = &choice.delta {
+                                                // First check for reasoning_content (thinking mode)
+                                                if let Some(reasoning) = &delta.reasoning_content {
+                                                    // Wrap thinking content in a special marker
+                                                    yield Ok(format!("<thinking>{}</thinking>", reasoning));
+                                                }
+                                                // Then check for regular content
                                                 if let Some(content) = &delta.content {
                                                     yield Ok(content.clone());
                                                 }

@@ -47,6 +47,13 @@ export function formatMarkdown(
 
     let formatted = shouldEscape ? escapeHtml(text) : text;
 
+    // Handle thinking blocks first (from reasoning mode)
+    // Format: <thinking>content</thinking>
+    formatted = formatted.replace(
+        /<thinking>([\s\S]*?)<\/thinking>/g,
+        '<div class="thinking-block">$1</div>',
+    );
+
     // Handle code blocks first (before other processing)
     formatted = formatted.replace(
         /```(\w*)\n?([\s\S]*?)```/g,

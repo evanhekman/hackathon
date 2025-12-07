@@ -18,7 +18,7 @@ use crate::types::{
     GrokSelectionSummaryRequest, GrokSelectionSummaryResponse,
 };
 use kicad_db::{
-    messages::{ChatCompletionRequest, Message},
+    messages::{ChatCompletionRequest, Message, ReasoningEffort},
     utilities::load_environment_file::load_environment_file,
     xai_client::{InputMessage, ResponsesRequest, Tool, XaiClient},
     PgPool,
@@ -951,16 +951,26 @@ pub async fn selection_stream(
     );
 
     info!(
-        "Using system prompt ({} chars), context ({} chars)",
+        "Using system prompt ({} chars), context ({} chars), thinking_mode: {}",
         system_prompt.len(),
-        user_prompt.len()
+        user_prompt.len(),
+        req.thinking_mode
     );
 
     let messages = vec![Message::system(system_prompt), Message::user(user_prompt)];
 
     // Create chat completion request with streaming
-    let chat_request =
-        ChatCompletionRequest::with_stream(messages, "grok-3-fast".to_string(), true);
+    // Use grok-4-1-fast model, with optional reasoning/thinking mode
+    let chat_request = if req.thinking_mode {
+        ChatCompletionRequest::with_reasoning(
+            messages,
+            "grok-4-1-fast".to_string(),
+            true,
+            ReasoningEffort::Low,
+        )
+    } else {
+        ChatCompletionRequest::with_stream(messages, "grok-4-1-fast".to_string(), true)
+    };
 
     // Get the stream
     let stream = xai_client
