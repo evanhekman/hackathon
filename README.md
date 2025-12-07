@@ -1,6 +1,6 @@
 # GroKi
 
-AI-powered KiCad understanding for humans. GroKi distills complex schematics into structured data, streams AI explanations, and tracks changes across hardware repos so other engineers, reviewers, and stakeholders (not just EEs) can see what changed, why, and where to look next. Learn more at https://grokicad.com.
+AI-powered KiCad understanding for humans. GroKi distills complex schematics into structured data, streams AI explanations, and tracks changes across hardware repos so other engineers, reviewers, and stakeholders (not just EEs) can see what changed, why, and where to look next. Try it out at https://grokicad.com.
 
 ## Why
 Most people looking at schematics aren’t the original EE, and they need clarity more than another AI authoring tool. Netlists are hard to read, version-control diffing is clunky, and AI tools rarely speak KiCad. GroKi bridges that gap for reviewers, systems engineers, firmware teams, and judges: it parses KiCad projects, summarizes commits and selections with Grok, searches parts, and serves an interactive viewer workflow.
