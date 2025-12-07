@@ -14,6 +14,7 @@ import "./info-panel";
 import "./properties-panel";
 import "./symbols-panel";
 import "./viewer";
+import "./zone-panel";
 import type { ProjectPage } from "../../project";
 import { KicadSch } from "../../../kicad";
 import { SchematicSheet } from "../../../kicad/schematic";
@@ -59,6 +60,14 @@ export class KCSchematicAppElement extends KCViewerAppElement<KCSchematicViewerE
                 name="Symbols"
                 icon="interests">
                 <kc-schematic-symbols-panel></kc-schematic-symbols-panel>
+            </kc-ui-activity>`,
+
+            // Zone Selection
+            html`<kc-ui-activity
+                slot="activities"
+                name="Zone"
+                icon="select_all">
+                <kc-schematic-zone-panel></kc-schematic-zone-panel>
             </kc-ui-activity>`,
 
             // Schematic item properties

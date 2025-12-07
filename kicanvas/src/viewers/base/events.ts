@@ -44,22 +44,55 @@ export class KiCanvasMouseMoveEvent extends KiCanvasEvent<MouseMoveDetails> {
     }
 }
 
+interface ZoneSelectDetails {
+    /** The items (symbols, wires, etc.) within the selected zone */
+    items: unknown[];
+    /** The bounding box of the selection zone */
+    bounds: { x: number; y: number; w: number; h: number };
+    /** Connection data for the selected components */
+    connections: ZoneConnection[];
+}
+
+export interface ZoneConnection {
+    /** The source component reference */
+    from: string;
+    /** The source component pin */
+    fromPin: string;
+    /** The destination component reference */
+    to: string;
+    /** The destination component pin */
+    toPin: string;
+    /** The net name if available */
+    netName?: string;
+}
+
+export class KiCanvasZoneSelectEvent extends KiCanvasEvent<ZoneSelectDetails> {
+    static readonly type = "kicanvas:zoneselect";
+
+    constructor(detail: ZoneSelectDetails) {
+        super(KiCanvasZoneSelectEvent.type, detail, true);
+    }
+}
+
 // Event maps for type safe addEventListener.
 
 export interface KiCanvasEventMap {
     [KiCanvasLoadEvent.type]: KiCanvasLoadEvent;
     [KiCanvasSelectEvent.type]: KiCanvasSelectEvent;
     [KiCanvasMouseMoveEvent.type]: KiCanvasMouseMoveEvent;
+    [KiCanvasZoneSelectEvent.type]: KiCanvasZoneSelectEvent;
 }
 
 declare global {
     interface WindowEventMap {
         [KiCanvasLoadEvent.type]: KiCanvasLoadEvent;
         [KiCanvasSelectEvent.type]: KiCanvasSelectEvent;
+        [KiCanvasZoneSelectEvent.type]: KiCanvasZoneSelectEvent;
     }
 
     interface HTMLElementEventMap {
         [KiCanvasLoadEvent.type]: KiCanvasLoadEvent;
         [KiCanvasSelectEvent.type]: KiCanvasSelectEvent;
+        [KiCanvasZoneSelectEvent.type]: KiCanvasZoneSelectEvent;
     }
 }
