@@ -11,6 +11,7 @@ import {
     KiCanvasSelectEvent,
 } from "../../../viewers/base/events";
 import type { Viewer } from "../../../viewers/base/viewer";
+import type { Project } from "../../project";
 
 export class KCViewerBottomToolbarElement extends KCUIElement {
     static override styles = [
@@ -33,13 +34,16 @@ export class KCViewerBottomToolbarElement extends KCUIElement {
     ];
 
     viewer: Viewer;
+    project: Project;
     #position_elm: HTMLOutputElement;
     #zoom_to_page_btn: KCUIButtonElement;
     #zoom_to_selection_btn: KCUIButtonElement;
+    #download_btn: KCUIButtonElement;
 
     override connectedCallback() {
         (async () => {
             this.viewer = await this.requestLazyContext("viewer");
+            this.project = await this.requestContext("project");
             await this.viewer.loaded;
 
             super.connectedCallback();
@@ -68,6 +72,12 @@ export class KCViewerBottomToolbarElement extends KCUIElement {
                 e.preventDefault();
                 this.viewer.zoom_to_selection();
             });
+            this.#download_btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (this.project.active_page) {
+                    this.project.download(this.project.active_page.filename);
+                }
+            });
         })();
     }
 
@@ -82,6 +92,14 @@ export class KCViewerBottomToolbarElement extends KCUIElement {
         this.#position_elm = html`<output
             slot="left"
             class="toolbar"></output>` as HTMLOutputElement;
+
+        this.#download_btn = html`<kc-ui-button
+            slot="right"
+            variant="toolbar"
+            name="download"
+            title="download"
+            icon="download">
+        </kc-ui-button>` as KCUIButtonElement;
 
         this.#zoom_to_page_btn = html`<kc-ui-button
             slot="right"
@@ -103,7 +121,7 @@ export class KCViewerBottomToolbarElement extends KCUIElement {
         this.update_position();
 
         return html`<kc-ui-floating-toolbar location="bottom">
-            ${this.#position_elm} ${this.#zoom_to_selection_btn}
+            ${this.#position_elm} ${this.#download_btn} ${this.#zoom_to_selection_btn}
             ${this.#zoom_to_page_btn}
         </kc-ui-floating-toolbar>`;
     }

@@ -5,17 +5,15 @@
 */
 
 import { DeferredPromise } from "../../../base/async";
-import { delegate, listen } from "../../../base/events";
+import { listen } from "../../../base/events";
 import { length } from "../../../base/iterator";
 import {
     attribute,
     html,
     type ElementOrFragment,
 } from "../../../base/web-components";
-import { parseFlagAttribute } from "../../../base/web-components/flag-attribute";
 import {
     KCUIActivitySideBarElement,
-    KCUIButtonElement,
     KCUIElement,
 } from "../../../kc-ui";
 import { KiCanvasSelectEvent } from "../../../viewers/base/events";
@@ -27,6 +25,7 @@ import "./help-panel";
 import "./preferences-panel";
 import "./project-panel";
 import "./viewer-bottom-toolbar";
+import "./grok-button";
 
 interface ViewerElement extends HTMLElement {
     viewer: Viewer;
@@ -98,23 +97,6 @@ export abstract class KCViewerAppElement<
                 this.on_viewer_select(e.detail.item, e.detail.previous);
             }),
         );
-
-        // Handle download button.
-        delegate(this.renderRoot, "kc-ui-button", "click", (e) => {
-            const target = e.target as KCUIButtonElement;
-            console.log("button", target);
-            switch (target.name) {
-                case "download":
-                    if (this.project.active_page) {
-                        this.project.download(
-                            this.project.active_page.filename,
-                        );
-                    }
-                    break;
-                default:
-                    console.warn("Unknown button", e);
-            }
-        });
     }
 
     protected abstract on_viewer_select(
@@ -187,12 +169,6 @@ export abstract class KCViewerAppElement<
 
     override render() {
         const controls = this.controls ?? "none";
-        const controlslist = parseFlagAttribute(
-            this.controlslist ?? "",
-            controls == "none"
-                ? { fullscreen: false, download: false }
-                : { fullscreen: true, download: true },
-        );
 
         this.#viewer_elm = this.make_viewer_element();
         this.#viewer_elm.disableinteraction = controls == "none";
@@ -213,23 +189,8 @@ export abstract class KCViewerAppElement<
             this.#activity_bar = null;
         }
 
-        const top_toolbar_buttons = [];
-
-        if (controlslist["download"] && !this.#has_more_than_one_page()) {
-            top_toolbar_buttons.push(
-                html`<kc-ui-button
-                    slot="right"
-                    name="download"
-                    title="download"
-                    icon="download"
-                    variant="toolbar-alt">
-                </kc-ui-button>`,
-            );
-        }
-
-        const top_toolbar = html`<kc-ui-floating-toolbar location="top">
-            ${top_toolbar_buttons}
-        </kc-ui-floating-toolbar>`;
+        // Grok button in upper right corner
+        const grok_button = controls != "none" ? html`<kc-grok-button></kc-grok-button>` : null;
 
         let bottom_toolbar = null;
         if (controls != "none") {
@@ -239,7 +200,7 @@ export abstract class KCViewerAppElement<
         return html`<kc-ui-split-view vertical>
             ${this.#activity_bar} ${resizer}
             <kc-ui-view class="grow">
-                ${top_toolbar} ${this.#viewer_elm} ${bottom_toolbar}
+                ${grok_button} ${this.#viewer_elm} ${bottom_toolbar}
             </kc-ui-view>
         </kc-ui-split-view>`;
     }
