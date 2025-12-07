@@ -515,6 +515,8 @@ export class KCSchematicDigiKeyPanelElement extends KCUIElement {
     replacement_state: ReplacementState = "idle";
     replacement_result?: GrokObsoleteReplacementResponse;
     replacement_part?: DigiKeyPartInfo;
+    loading_message_index = 0;
+    loading_interval?: number;
 
     override connectedCallback() {
         (async () => {
@@ -524,6 +526,12 @@ export class KCSchematicDigiKeyPanelElement extends KCUIElement {
             this.setup_events();
             await this.check_configuration();
         })();
+    }
+
+    override disconnectedCallback() {
+        super.disconnectedCallback();
+        // Clean up any running loading animation interval
+        this.stop_loading_animation();
     }
 
     private async check_configuration() {
@@ -713,10 +721,46 @@ export class KCSchematicDigiKeyPanelElement extends KCUIElement {
         return qty.toLocaleString();
     }
 
+    private static LOADING_MESSAGES = [
+        "Analyzing part specifications...",
+        "Researching datasheet...",
+        "Searching for compatible replacements...",
+        "Checking distributor availability...",
+        "Comparing specifications...",
+        "Evaluating pin compatibility...",
+        "Finding best matches...",
+        "Compiling recommendations...",
+    ];
+
+    private start_loading_animation() {
+        this.loading_message_index = 0;
+        this.loading_interval = window.setInterval(() => {
+            this.loading_message_index =
+                (this.loading_message_index + 1) %
+                KCSchematicDigiKeyPanelElement.LOADING_MESSAGES.length;
+            // Update text directly to avoid re-rendering spinner (which resets animation)
+            const textEl = this.renderRoot.querySelector(".grok-loading-text");
+            if (textEl) {
+                textEl.textContent =
+                    KCSchematicDigiKeyPanelElement.LOADING_MESSAGES[
+                        this.loading_message_index
+                    ] ?? "";
+            }
+        }, 2500);
+    }
+
+    private stop_loading_animation() {
+        if (this.loading_interval) {
+            clearInterval(this.loading_interval);
+            this.loading_interval = undefined;
+        }
+    }
+
     private async find_replacement(part: DigiKeyPartInfo) {
         this.replacement_state = "loading";
         this.replacement_part = part;
         this.replacement_result = undefined;
+        this.start_loading_animation();
         this.update();
 
         try {
@@ -738,6 +782,7 @@ export class KCSchematicDigiKeyPanelElement extends KCUIElement {
             };
         }
 
+        this.stop_loading_animation();
         this.update();
     }
 
@@ -759,6 +804,10 @@ export class KCSchematicDigiKeyPanelElement extends KCUIElement {
         }
 
         if (this.replacement_state === "loading") {
+            const loadingMessage =
+                KCSchematicDigiKeyPanelElement.LOADING_MESSAGES[
+                    this.loading_message_index
+                ];
             return html`
                 <div class="replacement-panel">
                     <div class="replacement-header">
@@ -769,13 +818,13 @@ export class KCSchematicDigiKeyPanelElement extends KCUIElement {
                     </div>
                     <div class="grok-loading">
                         <div class="grok-loading-spinner"></div>
-                        <div class="grok-loading-text">
-                            Researching replacement options for<br />
-                            <strong
-                                >${this.replacement_part
-                                    ?.manufacturer_part_number ||
-                                "this part"}</strong
-                            >...
+                        <div class="grok-loading-part">
+                            ${this.replacement_part?.manufacturer_part_number ||
+                            "Part"}
+                        </div>
+                        <div class="grok-loading-text">${loadingMessage}</div>
+                        <div class="grok-loading-dots">
+                            <span></span><span></span><span></span>
                         </div>
                     </div>
                 </div>

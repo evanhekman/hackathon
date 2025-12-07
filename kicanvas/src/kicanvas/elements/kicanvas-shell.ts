@@ -310,6 +310,28 @@ class KiCanvasShellElement extends KCUIElement {
                         Nothing ever leaves your machine.
                     </p>
                 </section>
+                <section class="loading-overlay">
+                    <div class="hero-glow"></div>
+                    <div class="circuit-pattern"></div>
+                    <div class="loading-content">
+                        <div class="loading-spinner">
+                            <img
+                                class="loading-logo"
+                                src="images/Grok_Logomark_Light.png"
+                                alt="Grok" />
+                        </div>
+                        <h2 class="loading-title">Loading Repository</h2>
+                        <p class="loading-message">
+                            Cloning and parsing your schematic files...
+                        </p>
+                        <div class="loading-progress">
+                            <div class="loading-progress-bar"></div>
+                        </div>
+                        <p class="loading-hint">
+                            This may take a moment for larger repositories
+                        </p>
+                    </div>
+                </section>
                 <main>${this.#schematic_app} ${this.#board_app}</main>
             </kc-ui-app>
         `;

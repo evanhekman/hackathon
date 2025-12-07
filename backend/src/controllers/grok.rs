@@ -12,9 +12,9 @@ use tracing::{error, info};
 
 use crate::services::git;
 use crate::types::{
-    ApiError, GrokCommitSummaryRequest, GrokCommitSummaryResponse, 
+    ApiError, GrokCommitSummaryRequest, GrokCommitSummaryResponse,
     GrokObsoleteReplacementRequest, GrokObsoleteReplacementResponse,
-    GrokRepoSummaryRequest, GrokRepoSummaryResponse, GrokSelectionSummaryRequest, 
+    GrokRepoSummaryRequest, GrokRepoSummaryResponse, GrokSelectionSummaryRequest,
     GrokSelectionSummaryResponse,
 };
 // use kicad_db::PgPool;
@@ -374,23 +374,20 @@ pub async fn find_replacement(
     })?;
 
     // Build the context about the obsolete part
-    let mut part_info = format!(
-        "Obsolete Part: {}\n",
-        req.manufacturer_part_number
-    );
-    
+    let mut part_info = format!("Obsolete Part: {}\n", req.manufacturer_part_number);
+
     if let Some(ref mfr) = req.manufacturer {
         part_info.push_str(&format!("Manufacturer: {}\n", mfr));
     }
-    
+
     if let Some(ref desc) = req.description {
         part_info.push_str(&format!("Description: {}\n", desc));
     }
-    
+
     if let Some(ref cat) = req.category {
         part_info.push_str(&format!("Category: {}\n", cat));
     }
-    
+
     // Add key parameters
     if !req.parameters.is_empty() {
         part_info.push_str("Key Specifications:\n");
@@ -398,12 +395,12 @@ pub async fn find_replacement(
             part_info.push_str(&format!("  - {}: {}\n", param.name, param.value));
         }
     }
-    
+
     // Add links for Grok to research
     if let Some(ref datasheet_url) = req.datasheet_url {
         part_info.push_str(&format!("\nDatasheet URL: {}\n", datasheet_url));
     }
-    
+
     if let Some(ref product_url) = req.product_url {
         part_info.push_str(&format!("DigiKey Product Page: {}\n", product_url));
     }
@@ -438,7 +435,8 @@ Format the response clearly with headers and bullet points."#,
     let tools = vec![Tool::web_search()];
 
     // Create responses request with Grok model (must use grok-4 family for tools)
-    let responses_request = ResponsesRequest::new("grok-4-1-fast-reasoning".to_string(), input, tools);
+    let responses_request =
+        ResponsesRequest::new("grok-4-1-fast-reasoning".to_string(), input, tools);
 
     // Make API call using responses endpoint
     let api_response = xai_client
@@ -473,13 +471,13 @@ Format the response clearly with headers and bullet points."#,
                     }
                 }
             }
-            
+
             // Also check for result field (tool outputs)
             if let Some(result) = &item.result {
                 if let Some(result_str) = result.as_str() {
                     // Don't include raw tool results, just note they were used
-                    if result_str.len() > 0 {
-                        result_parts.push(format!("[Research data retrieved]"));
+                    if !result_str.is_empty() {
+                        result_parts.push("[Research data retrieved]".to_string());
                     }
                 }
             }
@@ -496,7 +494,7 @@ Format the response clearly with headers and bullet points."#,
                 .into_iter()
                 .filter(|s| !s.contains("[Research data retrieved]") || s.len() > 30)
                 .collect();
-            
+
             if filtered.is_empty() {
                 format!(
                     "Research completed but no specific recommendations could be extracted for {}. Please try searching manually.",
