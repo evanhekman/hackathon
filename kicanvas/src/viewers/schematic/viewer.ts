@@ -181,12 +181,21 @@ export class SchematicViewer extends DocumentViewer<
             return connections;
         }
 
-        // Selected symbols (zone contents) and all symbols in the schematic
+        // Selected symbols/sheets (zone contents) and all symbols/sheets
         const selectedSymbols = items.filter(
             (item): item is SchematicSymbol => item instanceof SchematicSymbol,
         );
-        const selectedRefs = new Set(selectedSymbols.map((s) => s.reference));
+        const selectedSheets = items.filter(
+            (item): item is SchematicSheet => item instanceof SchematicSheet,
+        );
+
+        const selectedRefs = new Set<string>([
+            ...selectedSymbols.map((s) => s.reference),
+            ...selectedSheets.map((s) => s.sheetname ?? s.sheetfile ?? s.uuid),
+        ]);
+
         const allSymbols = Array.from(this.schematic.symbols.values());
+        const allSheets = Array.from(this.schematic.sheets);
 
         // Use ALL wires and labels so we can find connections to components
         // outside the current selection zone.
@@ -235,11 +244,13 @@ export class SchematicViewer extends DocumentViewer<
             }
         }
 
+        // Label maps (must exist before sheet pin processing)
+        const labelByKey = new Map<string, NetLabel | GlobalLabel | HierarchicalLabel>();
+        const labelRootsByText = new Map<string, string[]>();
+
         // Map pin positions to nodes
-        const pinPositions = new Map<
-            string,
-            { symbol: SchematicSymbol; pin: PinInstance }[]
-        >();
+        type Endpoint = { ref: string; pinId: string };
+        const pinPositions = new Map<string, Endpoint[]>();
         for (const symbol of allSymbols) {
             for (const pin of symbol.unit_pins) {
                 const pos = this.get_pin_position(symbol, pin);
@@ -248,7 +259,32 @@ export class SchematicViewer extends DocumentViewer<
                 if (!pinPositions.has(k)) {
                     pinPositions.set(k, []);
                 }
-                pinPositions.get(k)!.push({ symbol, pin });
+                pinPositions.get(k)!.push({
+                    ref: symbol.reference,
+                    pinId: pin.number,
+                });
+            }
+        }
+
+        // Sheet pins (hierarchical ports) participate in connectivity
+        for (const sheet of allSheets) {
+            const sheetRef = sheet.sheetname ?? sheet.sheetfile ?? sheet.uuid;
+            for (const pin of sheet.pins) {
+                const pos = pin.at.position;
+                const k = keyFor(pos.x, pos.y);
+                find(k);
+                if (!pinPositions.has(k)) {
+                    pinPositions.set(k, []);
+                }
+                pinPositions.get(k)!.push({
+                    ref: sheetRef,
+                    pinId: pin.name,
+                });
+                // Track sheet pin roots by name for cross-sheet linking
+                if (!labelRootsByText.has(pin.name)) {
+                    labelRootsByText.set(pin.name, []);
+                }
+                labelRootsByText.get(pin.name)!.push(find(k));
             }
         }
 
@@ -258,15 +294,30 @@ export class SchematicViewer extends DocumentViewer<
         }
 
         // Attach labels as nodes and union with coincident wire/pin points
-        const labelByKey = new Map<string, NetLabel | GlobalLabel | HierarchicalLabel>();
         for (const label of labels) {
             const k = keyFor(label.at.position.x, label.at.position.y);
             labelByKey.set(k, label);
             find(k);
+            const root = find(k);
+            if (label.text) {
+                if (!labelRootsByText.has(label.text)) {
+                    labelRootsByText.set(label.text, []);
+                }
+                labelRootsByText.get(label.text)!.push(root);
+            }
         }
 
         // If labels or pins share the same coordinate as a wire node, they are already united.
         // (All nodes share the same key mapping.)
+
+        // Connect hierarchical/global labels with identical text (and sheet pins with same name)
+        const unionAll = (roots: string[]) => {
+            if (roots.length < 2) return;
+            const [first, ...rest] = roots;
+            for (const r of rest) {
+                union(first, r);
+            }
+        };
 
         // Deduplicate connections regardless of ordering
         const seen = new Set<string>();
@@ -274,13 +325,9 @@ export class SchematicViewer extends DocumentViewer<
         const isPowerRef = (ref: string) =>
             ref.startsWith("#PWR") || ref.toUpperCase().startsWith("PWR?");
 
-        const pushConnection = (
-            a: { symbol: SchematicSymbol; pin: PinInstance },
-            b: { symbol: SchematicSymbol; pin: PinInstance },
-            netName?: string,
-        ) => {
-            const aRef = a.symbol.reference;
-            const bRef = b.symbol.reference;
+        const pushConnection = (a: Endpoint, b: Endpoint, netName?: string) => {
+            const aRef = a.ref;
+            const bRef = b.ref;
 
             // Drop power symbol connections
             if (isPowerRef(aRef) || isPowerRef(bRef)) {
@@ -306,26 +353,28 @@ export class SchematicViewer extends DocumentViewer<
                 to = a;
             }
 
-            const key = `${from.symbol.reference}|${from.pin.number}->${to.symbol.reference}|${to.pin.number}`;
+            const key = `${from.ref}|${from.pinId}->${to.ref}|${to.pinId}`;
             if (seen.has(key)) {
                 return;
             }
             seen.add(key);
 
                                     connections.push({
-                from: from.symbol.reference,
-                fromPin: from.pin.number,
-                to: to.symbol.reference,
-                toPin: to.pin.number,
+                from: from.ref,
+                fromPin: from.pinId,
+                to: to.ref,
+                toPin: to.pinId,
                 netName,
             });
         };
 
+        // Union all roots sharing the same label/pin text
+        for (const roots of labelRootsByText.values()) {
+            unionAll(roots.map((r) => find(r)));
+        }
+
         // Build groups of pins by connectivity root
-        const pinsByRoot = new Map<
-            string,
-            { symbol: SchematicSymbol; pin: PinInstance }[]
-        >();
+        const pinsByRoot = new Map<string, Endpoint[]>();
         for (const [k, pins] of pinPositions) {
             const root = find(k);
             if (!pinsByRoot.has(root)) {
