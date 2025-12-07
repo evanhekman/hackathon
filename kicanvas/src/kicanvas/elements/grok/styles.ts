@@ -4,6 +4,7 @@
 */
 
 import { css } from "../../../base/web-components";
+import { grokMarkdownStyles } from "../../services/markdown-formatter";
 
 // =============================================================================
 // Host & Container Styles
@@ -33,7 +34,7 @@ export const hostStyles = css`
 
 export const containerStyles = css`
     .chat-container {
-        width: 340px;
+        width: 380px;
         height: 100%;
         background: rgba(15, 15, 15, 0.98);
         border: 1px solid rgba(255, 255, 255, 0.15);
@@ -109,13 +110,72 @@ export const headerStyles = css`
 export const bodyStyles = css`
     .chat-body {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-height: 0;
+    }
+
+    /* Collapsible Controls Section */
+    .controls-section {
+        flex-shrink: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .controls-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        padding: 10px 14px;
+        background: rgba(255, 206, 84, 0.05);
+        border: none;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        text-align: left;
+    }
+
+    .controls-toggle:hover {
+        background: rgba(255, 206, 84, 0.1);
+    }
+
+    .toggle-icon {
+        font-size: 8px;
+        color: rgba(255, 206, 84, 0.7);
+        transition: transform 0.2s ease;
+    }
+
+    .toggle-label {
+        flex: 1;
+    }
+
+    .selection-badge {
+        background: rgba(255, 206, 84, 0.25);
+        color: rgba(255, 206, 84, 1);
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .controls-content {
+        max-height: 280px;
         overflow-y: auto;
         overflow-x: hidden;
     }
 
+    .controls-section.collapsed .controls-content {
+        display: none;
+    }
+
     .section {
-        padding: 12px 16px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 10px 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .section:last-child {
@@ -123,12 +183,12 @@ export const bodyStyles = css`
     }
 
     .section-label {
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 600;
-        color: rgba(255, 255, 255, 0.4);
+        color: rgba(255, 255, 255, 0.45);
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
 `;
 
@@ -140,59 +200,59 @@ export const componentCardStyles = css`
     .component-cards {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 4px;
     }
 
     .component-card {
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 6px 10px;
-        background: rgba(255, 206, 84, 0.15);
-        border: 1px solid rgba(255, 206, 84, 0.3);
-        border-radius: 6px;
-        font-size: 12px;
+        padding: 3px 7px;
+        background: rgba(255, 206, 84, 0.12);
+        border: 1px solid rgba(255, 206, 84, 0.25);
+        border-radius: 4px;
+        font-size: 11px;
         color: rgba(255, 255, 255, 0.9);
         cursor: pointer;
-        transition: all 0.15s ease;
+        transition: all 0.12s ease;
         user-select: none;
     }
 
     .component-card:hover {
-        background: rgba(255, 206, 84, 0.25);
-        border-color: rgba(255, 206, 84, 0.5);
+        background: rgba(255, 206, 84, 0.2);
+        border-color: rgba(255, 206, 84, 0.4);
     }
 
     .component-card.hovered {
-        background: rgba(255, 206, 84, 0.35);
-        border-color: rgba(255, 206, 84, 0.7);
-        box-shadow: 0 0 8px rgba(255, 206, 84, 0.4);
+        background: rgba(255, 206, 84, 0.3);
+        border-color: rgba(255, 206, 84, 0.6);
+        box-shadow: 0 0 6px rgba(255, 206, 84, 0.35);
     }
 
     .component-card .ref {
         font-weight: 600;
         font-family: "JetBrains Mono", "SF Mono", monospace;
+        font-size: 10px;
     }
 
     .more-indicator {
-        padding: 6px 10px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 6px;
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.6);
+        padding: 3px 7px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 4px;
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.5);
         cursor: pointer;
-        transition: all 0.15s ease;
+        transition: all 0.12s ease;
     }
 
     .more-indicator:hover {
-        background: rgba(255, 255, 255, 0.12);
-        color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.8);
     }
 
     .no-selection {
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.4);
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.35);
         font-style: italic;
     }
 `;
@@ -329,49 +389,51 @@ export const presetStyles = css`
     .preset-cards {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 5px;
     }
 
     .preset-card {
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 6px 10px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 6px;
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.9);
+        gap: 5px;
+        padding: 5px 9px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 5px;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.85);
         cursor: pointer;
-        transition: all 0.15s ease;
+        transition: all 0.12s ease;
     }
 
     .preset-card:hover:not(.disabled) {
-        background: rgba(255, 255, 255, 0.12);
-        border-color: rgba(255, 255, 255, 0.25);
+        background: rgba(255, 206, 84, 0.12);
+        border-color: rgba(255, 206, 84, 0.35);
+        color: rgba(255, 255, 255, 1);
     }
 
     .preset-card.selected {
-        background: rgba(255, 206, 84, 0.15);
-        border-color: rgba(255, 206, 84, 0.4);
+        background: rgba(255, 206, 84, 0.18);
+        border-color: rgba(255, 206, 84, 0.5);
+        color: rgba(255, 206, 84, 1);
     }
 
     .preset-card.disabled {
-        opacity: 0.4;
+        opacity: 0.35;
         cursor: not-allowed;
     }
 
     .preset-card.disabled:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.12);
     }
 
     .preset-icon {
-        font-size: 14px;
+        font-size: 12px;
     }
 
     .preset-title {
-        font-weight: 600;
+        font-weight: 500;
         font-family: inherit;
     }
 `;
@@ -381,35 +443,45 @@ export const presetStyles = css`
 // =============================================================================
 
 export const queryInputStyles = css`
+    .query-section {
+        flex-shrink: 0;
+        padding: 10px 14px;
+        background: rgba(20, 20, 20, 0.6);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
     .query-input-container {
         display: flex;
         gap: 8px;
+        align-items: flex-end;
     }
 
     .query-input {
         flex: 1;
-        padding: 10px 12px;
-        background: rgba(255, 255, 255, 0.05);
+        padding: 8px 10px;
+        background: rgba(255, 255, 255, 0.04);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
+        border-radius: 6px;
         color: rgba(255, 255, 255, 0.9);
-        font-size: 13px;
+        font-size: 12px;
         font-family: inherit;
         outline: none;
         resize: none;
-        min-height: 160px;
-        max-height: 200px;
+        min-height: 32px;
+        max-height: 64px;
         transition: all 0.15s ease;
         box-sizing: border-box;
+        line-height: 1.4;
     }
 
     .query-input:focus {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 206, 84, 0.5);
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 206, 84, 0.4);
     }
 
     .query-input::placeholder {
         color: rgba(255, 255, 255, 0.3);
+        font-size: 12px;
     }
 
     .send-button {
@@ -418,14 +490,14 @@ export const queryInputStyles = css`
         justify-content: center;
         min-width: 32px;
         height: 32px;
-        background: var(--button-bg, rgba(255, 255, 255, 0.08));
-        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+        background: rgba(255, 206, 84, 0.15);
+        border: 1px solid rgba(255, 206, 84, 0.3);
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.15s ease;
-        color: var(--button-fg, rgba(255, 255, 255, 0.8));
+        color: rgba(255, 206, 84, 0.9);
         font-family: "Material Symbols Outlined";
-        font-size: 18px;
+        font-size: 16px;
         font-weight: normal;
         font-style: normal;
         line-height: 1;
@@ -433,15 +505,15 @@ export const queryInputStyles = css`
     }
 
     .send-button:hover:not(:disabled) {
-        background: var(--button-hover-bg, rgba(255, 255, 255, 0.12));
-        border-color: var(--button-hover-border, rgba(255, 255, 255, 0.2));
-        color: var(--button-hover-fg, rgba(255, 255, 255, 1));
+        background: rgba(255, 206, 84, 0.25);
+        border-color: rgba(255, 206, 84, 0.5);
+        color: rgba(255, 206, 84, 1);
     }
 
     .send-button:disabled {
-        background: var(--button-disabled-bg, rgba(255, 255, 255, 0.05));
-        border-color: var(--button-disabled-border, rgba(255, 255, 255, 0.08));
-        color: var(--button-disabled-fg, rgba(255, 255, 255, 0.3));
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.25);
         cursor: not-allowed;
     }
 `;
@@ -450,41 +522,68 @@ export const queryInputStyles = css`
 // Response Styles
 // =============================================================================
 
+/** Markdown styles for response content - imported from shared formatter */
+export const responseMarkdownStyles = grokMarkdownStyles;
+
 export const responseStyles = css`
     .response-section {
-        background: rgba(0, 0, 0, 0.3);
-        max-height: 250px;
+        flex: 1;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.35) 100%);
+        border-top: 1px solid rgba(255, 206, 84, 0.15);
+        overflow: hidden;
+    }
+
+    .response-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 14px;
+        background: rgba(255, 206, 84, 0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        flex-shrink: 0;
+    }
+
+    .response-header-title {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: rgba(255, 206, 84, 0.9);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .response-header-icon {
+        font-size: 14px;
+    }
+
+    .response-scroll {
+        flex: 1;
         overflow-y: auto;
+        overflow-x: hidden;
+        padding: 12px 14px;
     }
 
     .response-content {
         font-size: 13px;
-        line-height: 1.6;
-        color: rgba(255, 255, 255, 0.85);
-        white-space: pre-wrap;
+        line-height: 1.65;
+        color: rgba(255, 255, 255, 0.88);
         word-wrap: break-word;
-    }
-
-    .response-content code {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-family: "JetBrains Mono", "SF Mono", monospace;
-        font-size: 12px;
-    }
-
-    .response-content strong {
-        color: rgba(255, 206, 84, 0.9);
     }
 
     .cursor {
         display: inline-block;
-        width: 8px;
-        height: 16px;
-        background: rgba(255, 206, 84, 0.8);
+        width: 2px;
+        height: 1em;
+        background: rgba(255, 206, 84, 0.9);
         animation: blink 1s step-end infinite;
         margin-left: 2px;
         vertical-align: text-bottom;
+        border-radius: 1px;
     }
 
     @keyframes blink {
@@ -499,21 +598,24 @@ export const responseStyles = css`
 
     .loading-indicator {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 10px;
+        justify-content: center;
+        gap: 12px;
+        padding: 24px;
         color: rgba(255, 255, 255, 0.6);
         font-size: 13px;
     }
 
     .loading-dots {
         display: flex;
-        gap: 4px;
+        gap: 6px;
     }
 
     .loading-dots span {
-        width: 6px;
-        height: 6px;
-        background: rgba(255, 206, 84, 0.6);
+        width: 8px;
+        height: 8px;
+        background: rgba(255, 206, 84, 0.7);
         border-radius: 50%;
         animation: loading-bounce 1.4s ease-in-out infinite;
     }
@@ -532,22 +634,44 @@ export const responseStyles = css`
         0%,
         80%,
         100% {
-            transform: scale(0.8);
-            opacity: 0.5;
+            transform: scale(0.6);
+            opacity: 0.4;
         }
         40% {
-            transform: scale(1.2);
+            transform: scale(1);
             opacity: 1;
         }
     }
 
     .error-message {
-        color: rgb(255, 100, 100);
+        color: rgb(255, 120, 120);
         font-size: 13px;
-        padding: 8px 12px;
+        padding: 10px 14px;
         background: rgba(255, 100, 100, 0.1);
-        border-radius: 6px;
-        border: 1px solid rgba(255, 100, 100, 0.2);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 100, 100, 0.25);
+        line-height: 1.5;
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 20px;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    .empty-state-icon {
+        font-size: 32px;
+        margin-bottom: 12px;
+        opacity: 0.6;
+    }
+
+    .empty-state-text {
+        font-size: 13px;
+        line-height: 1.5;
     }
 `;
 
@@ -556,65 +680,32 @@ export const responseStyles = css`
 // =============================================================================
 
 export const scrollbarStyles = css`
-    .chat-body::-webkit-scrollbar,
-    .response-section::-webkit-scrollbar,
+    .controls-content::-webkit-scrollbar,
+    .response-scroll::-webkit-scrollbar,
     .search-results::-webkit-scrollbar {
-        width: 6px;
+        width: 5px;
     }
 
-    .chat-body::-webkit-scrollbar-track,
-    .response-section::-webkit-scrollbar-track,
+    .controls-content::-webkit-scrollbar-track,
+    .response-scroll::-webkit-scrollbar-track,
     .search-results::-webkit-scrollbar-track {
         background: transparent;
     }
 
-    .chat-body::-webkit-scrollbar-thumb,
-    .response-section::-webkit-scrollbar-thumb,
+    .controls-content::-webkit-scrollbar-thumb,
+    .response-scroll::-webkit-scrollbar-thumb,
     .search-results::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.15);
         border-radius: 3px;
     }
-`;
 
-// =============================================================================
-// Footer Styles
-// =============================================================================
-
-export const footerStyles = css`
-    .chat-footer {
-        display: flex;
-        justify-content: flex-end;
-        padding: 8px 12px;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(20, 20, 20, 0.95);
-        flex-shrink: 0;
-    }
-
-    .clear-data-button {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        padding: 4px 8px;
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 4px;
-        color: rgba(255, 255, 255, 0.5);
-        font-size: 11px;
-        cursor: pointer;
-        transition: all 0.15s ease;
-    }
-
-    .clear-data-button:hover:not(:disabled) {
-        background: rgba(255, 100, 100, 0.1);
-        border-color: rgba(255, 100, 100, 0.3);
-        color: rgba(255, 100, 100, 0.9);
-    }
-
-    .clear-data-button:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
+    .controls-content::-webkit-scrollbar-thumb:hover,
+    .response-scroll::-webkit-scrollbar-thumb:hover,
+    .search-results::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.25);
     }
 `;
+
 
 // =============================================================================
 // Combined Styles (for main panel)
@@ -630,6 +721,6 @@ export const grokChatPanelStyles = [
     presetStyles,
     queryInputStyles,
     responseStyles,
+    responseMarkdownStyles,
     scrollbarStyles,
-    footerStyles,
 ];

@@ -30,6 +30,7 @@ export {
     presetStyles,
     queryInputStyles,
     responseStyles,
+    responseMarkdownStyles,
     scrollbarStyles,
     grokChatPanelStyles,
 } from "./styles";

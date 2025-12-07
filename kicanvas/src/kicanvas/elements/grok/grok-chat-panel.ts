@@ -21,6 +21,7 @@ import { grokChatPanelStyles } from "./styles";
 import { PROJECT_PRESETS, COMPONENT_PRESETS } from "./presets";
 import { grokAPI } from "./grok-api-service";
 import type { SelectedComponent, GrokContext } from "./types";
+import { formatMarkdown } from "../../services/markdown-formatter";
 
 export class KCGrokChatPanelElement extends KCUIElement {
     static override styles = [...KCUIElement.styles, ...grokChatPanelStyles];
@@ -56,11 +57,16 @@ export class KCGrokChatPanelElement extends KCUIElement {
     private _hoveredComponentUuid: string | null = null; // Component hovered in viewer
     private _searchHighlightIndex: number = -1; // Keyboard navigation index for search results
     private _searchInputFocused: boolean = false; // Track if search input is focused
+    private _controlsCollapsed: boolean = false; // Collapse quick actions for more response space
 
     // Context
     private _viewer: Viewer | null = null;
     private _viewerEventsSetup = false; // Track if we've set up viewer events
     private _context: GrokContext = { repo: null, commit: null };
+
+    // Update batching to prevent flickering
+    private _updatePending = false;
+    private _isInitialized = false;
 
     // =========================================================================
     // Lifecycle
@@ -73,6 +79,10 @@ export class KCGrokChatPanelElement extends KCUIElement {
 
     override initialContentCallback() {
         this._setupEventListeners();
+        // Mark as initialized after first render is complete
+        requestAnimationFrame(() => {
+            this._isInitialized = true;
+        });
     }
 
     override renderedCallback() {
@@ -113,15 +123,51 @@ export class KCGrokChatPanelElement extends KCUIElement {
     }
 
     // =========================================================================
+    // Update Batching - Prevents flickering from multiple rapid updates
+    // =========================================================================
+
+    /**
+     * Schedule a batched update. Multiple calls within the same frame
+     * are coalesced into a single update.
+     */
+    private _scheduleUpdate() {
+        if (this._updatePending) return;
+        this._updatePending = true;
+        
+        // Use requestAnimationFrame for smooth updates
+        requestAnimationFrame(() => {
+            if (this._updatePending && this._isInitialized) {
+                this._updatePending = false;
+                super.update();
+            } else {
+                this._updatePending = false;
+            }
+        });
+    }
+
+    /**
+     * Override update to use batched updates after initialization
+     */
+    override async update(): Promise<boolean> {
+        if (!this._isInitialized) {
+            // During initial render, use normal update
+            return super.update();
+        }
+        this._scheduleUpdate();
+        return Promise.resolve(true);
+    }
+
+    // =========================================================================
     // Public API
     // =========================================================================
 
-    public async show() {
+    public show() {
+        if (this.visible) return;
         this.visible = true;
         this._loadAllComponents();
         
-        // Trigger repository initialization for AI analysis
-        await this._initializeForAI();
+        // Trigger repository initialization for AI analysis (non-blocking)
+        this._initializeForAI();
     }
 
     /**
@@ -137,7 +183,7 @@ export class KCGrokChatPanelElement extends KCUIElement {
 
         try {
             this._isLoading = true;
-            this.update();
+            this._scheduleUpdate();
 
             await grokAPI.initRepository(repo, commit, {
                 onStart: () => {
@@ -154,11 +200,11 @@ export class KCGrokChatPanelElement extends KCUIElement {
             });
 
             this._isLoading = false;
-            this.update();
+            this._scheduleUpdate();
         } catch (err) {
             console.error("[GrokChat] Failed to initialize repository:", err);
             this._isLoading = false;
-            this.update();
+            this._scheduleUpdate();
         }
     }
 
@@ -193,6 +239,7 @@ export class KCGrokChatPanelElement extends KCUIElement {
     }
 
     public hide() {
+        if (!this.visible) return;
         this.visible = false;
     }
 
@@ -205,8 +252,13 @@ export class KCGrokChatPanelElement extends KCUIElement {
     }
 
     public setSelectedComponents(components: SelectedComponent[]) {
+        // Only update if components actually changed
+        const currentIds = this._selectedComponents.map(c => c.uuid).sort().join(',');
+        const newIds = components.map(c => c.uuid).sort().join(',');
+        if (currentIds === newIds) return;
+        
         this._selectedComponents = components;
-        this.update();
+        this._scheduleUpdate();
     }
 
     // =========================================================================
@@ -271,30 +323,44 @@ export class KCGrokChatPanelElement extends KCUIElement {
                         }
                     }
                 }
-                // Always update, even if empty (clears selection)
-                console.log(
-                    "[GrokChat] Zone selection event:",
-                    newComponents.length,
-                    "components",
-                );
-                this._selectedComponents = newComponents;
-                this.update();
+                // Only update if selection actually changed
+                const currentIds = this._selectedComponents.map(c => c.uuid).sort().join(',');
+                const newIds = newComponents.map(c => c.uuid).sort().join(',');
+                if (currentIds !== newIds) {
+                    console.log(
+                        "[GrokChat] Zone selection event:",
+                        newComponents.length,
+                        "components",
+                    );
+                    this._selectedComponents = newComponents;
+                    this._scheduleUpdate();
+                }
             }),
         );
 
         // Listen for hover events to highlight cards when hovering in viewer
+        // Use DOM manipulation instead of full re-render for performance
         this.addDisposable(
             this._viewer.addEventListener(KiCanvasHoverEvent.type, (e) => {
                 const item = e.detail.item;
-                if (item && this._hasUuid(item)) {
-                    const uuid = (item as { uuid: string }).uuid;
-                    if (this._hoveredComponentUuid !== uuid) {
-                        this._hoveredComponentUuid = uuid;
-                        this.update();
+                const newUuid = item && this._hasUuid(item) ? (item as { uuid: string }).uuid : null;
+                
+                if (this._hoveredComponentUuid !== newUuid) {
+                    // Remove old highlight
+                    if (this._hoveredComponentUuid) {
+                        const oldCard = this.renderRoot.querySelector(
+                            `.component-card[data-uuid="${this._hoveredComponentUuid}"]`
+                        );
+                        oldCard?.classList.remove("hovered");
                     }
-                } else if (this._hoveredComponentUuid !== null) {
-                    this._hoveredComponentUuid = null;
-                    this.update();
+                    // Add new highlight
+                    if (newUuid) {
+                        const newCard = this.renderRoot.querySelector(
+                            `.component-card[data-uuid="${newUuid}"]`
+                        );
+                        newCard?.classList.add("hovered");
+                    }
+                    this._hoveredComponentUuid = newUuid;
                 }
             }),
         );
@@ -317,9 +383,11 @@ export class KCGrokChatPanelElement extends KCUIElement {
             }),
         );
 
+        // Toggle collapsible controls section
         this.addDisposable(
-            delegate(root, ".clear-data-button", "click", () => {
-                this._clearCache();
+            delegate(root, ".controls-toggle", "click", () => {
+                this._controlsCollapsed = !this._controlsCollapsed;
+                this._scheduleUpdate();
             }),
         );
 
@@ -365,7 +433,7 @@ export class KCGrokChatPanelElement extends KCUIElement {
         this.addDisposable(
             delegate(root, ".more-indicator", "click", () => {
                 this._showAllComponents = !this._showAllComponents;
-                this.update();
+                this._scheduleUpdate();
             }),
         );
 
@@ -466,7 +534,7 @@ export class KCGrokChatPanelElement extends KCUIElement {
                     this._showSearchResults = false;
                     this._searchHighlightIndex = -1;
                     this._searchInputFocused = false;
-                    this.update();
+                    this._scheduleUpdate();
                 }
             }),
         );
@@ -477,12 +545,12 @@ export class KCGrokChatPanelElement extends KCUIElement {
                 // Always show results on focus if there's a query or show all components
                 if (this._searchQuery.trim()) {
                     this._showSearchResults = true;
-                    this.update();
+                    this._scheduleUpdate();
                 } else if (this._allComponents.length > 0) {
                     // Show all components when focusing empty search
                     this._searchResults = this._allComponents;
                     this._showSearchResults = true;
-                    this.update();
+                    this._scheduleUpdate();
                 }
             }),
         );
@@ -533,7 +601,7 @@ export class KCGrokChatPanelElement extends KCUIElement {
                         this._showSearchResults = false;
                         this._searchHighlightIndex = -1;
                         this._searchInputFocused = false;
-                        this.update();
+                        this._scheduleUpdate();
                     }
                 },
                 { capture: true },
@@ -600,7 +668,7 @@ export class KCGrokChatPanelElement extends KCUIElement {
         if (!this._isSelected(component.uuid)) {
             this._selectedComponents = [...this._selectedComponents, component];
             this._syncSelectionToViewer();
-            this.update();
+            this._scheduleUpdate();
         }
     }
 
@@ -609,7 +677,7 @@ export class KCGrokChatPanelElement extends KCUIElement {
             (c) => c.uuid !== uuid,
         );
         this._syncSelectionToViewer();
-        this.update();
+        this._scheduleUpdate();
     }
 
     private _toggleComponent(component: SelectedComponent) {
@@ -747,14 +815,14 @@ export class KCGrokChatPanelElement extends KCUIElement {
         const isComponentPreset = COMPONENT_PRESETS.some((p) => p.id === presetId);
         if (isComponentPreset && this._selectedComponents.length === 0) {
             this._error = "Please select one or more components first";
-            this.update();
+            this._scheduleUpdate();
             return;
         }
 
         // Set the preset and query
         this._selectedPreset = presetId;
         this._customQuery = preset.query;
-        this.update();
+        this._scheduleUpdate();
 
         // Auto-submit the query
         await this._submitQuery();
@@ -768,7 +836,7 @@ export class KCGrokChatPanelElement extends KCUIElement {
         this._error = null;
         this._responseContent = "";
         this.streaming = true;
-        this.update();
+        this._scheduleUpdate();
 
         await grokAPI.streamQuery(
             this._context,
@@ -777,29 +845,36 @@ export class KCGrokChatPanelElement extends KCUIElement {
             {
                 onStart: () => {
                     this._isLoading = false;
-                    this.update();
+                    this._scheduleUpdate();
                 },
                 onChunk: (content) => {
                     this._responseContent = content;
-                    this._scrollResponseToBottom();
-                    this.update();
+                    // Update response content directly for streaming performance
+                    const responseEl = this.renderRoot.querySelector(".response-content");
+                    if (responseEl) {
+                        responseEl.innerHTML = this._formatContent(content) + 
+                            (this.streaming ? '<span class="cursor"></span>' : '');
+                        this._scrollResponseToBottom();
+                    } else {
+                        this._scheduleUpdate();
+                    }
                 },
                 onComplete: () => {
                     this.streaming = false;
-                    this.update();
+                    this._scheduleUpdate();
                 },
                 onError: (error) => {
                     this._isLoading = false;
                     this.streaming = false;
                     this._error = error;
-                    this.update();
+                    this._scheduleUpdate();
                 },
             },
         );
     }
 
     private _scrollResponseToBottom() {
-        const responseEl = this.renderRoot.querySelector(".response-section");
+        const responseEl = this.renderRoot.querySelector(".response-scroll");
         if (responseEl) {
             responseEl.scrollTop = responseEl.scrollHeight;
         }
@@ -810,10 +885,7 @@ export class KCGrokChatPanelElement extends KCUIElement {
     // =========================================================================
 
     private _formatContent(content: string): string {
-        let formatted = this._escapeHtml(content);
-        formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-        formatted = formatted.replace(/`([^`]+)`/g, "<code>$1</code>");
-        return formatted;
+        return formatMarkdown(content, { classPrefix: "grok" });
     }
 
     private _escapeHtml(text: string): string {
@@ -975,11 +1047,11 @@ export class KCGrokChatPanelElement extends KCUIElement {
             this._customQuery.trim().length > 0 && !this.streaming;
 
         return html`
-            <div class="section">
+            <div class="query-section">
                 <div class="query-input-container">
                     <textarea
                         class="query-input"
-                        placeholder="Ask anything about these components..."></textarea>
+                        placeholder="Ask anything about the schematic..."></textarea>
                     <button class="send-button" ?disabled="${!canSubmit}">
                         send
                     </button>
@@ -989,101 +1061,85 @@ export class KCGrokChatPanelElement extends KCUIElement {
     }
 
     private _renderResponse() {
-        if (!this._isLoading && !this._responseContent && !this._error) {
-            return null;
-        }
-
         return html`
-            <div class="section response-section">
-                ${this._error
-                    ? html`<div class="error-message">${this._error}</div>`
-                    : this._isLoading
-                    ? html`
-                          <div class="loading-indicator">
-                              <div class="loading-dots">
-                                  <span></span>
-                                  <span></span>
-                                  <span></span>
+            <div class="response-section">
+                <div class="response-header">
+                    <div class="response-header-title">
+                        <span class="response-header-icon">✨</span>
+                        <span>Grok Response</span>
+                    </div>
+                </div>
+                <div class="response-scroll">
+                    ${this._error
+                        ? html`<div class="error-message">${this._error}</div>`
+                        : this._isLoading
+                        ? html`
+                              <div class="loading-indicator">
+                                  <div class="loading-dots">
+                                      <span></span>
+                                      <span></span>
+                                      <span></span>
+                                  </div>
+                                  <span>Analyzing with Grok...</span>
                               </div>
-                              <span>Analyzing with Grok...</span>
-                          </div>
-                      `
-                    : html`
-                          <div class="response-content">
-                              ${this._formatContent(this._responseContent)}
-                              ${this.streaming
-                                  ? html`<span class="cursor"></span>`
-                                  : null}
-                          </div>
-                      `}
+                          `
+                        : this._responseContent
+                        ? html`
+                              <div class="response-content">
+                                  ${this._formatContent(this._responseContent)}
+                                  ${this.streaming
+                                      ? html`<span class="cursor"></span>`
+                                      : null}
+                              </div>
+                          `
+                        : html`
+                              <div class="empty-state">
+                                  <div class="empty-state-icon">💬</div>
+                                  <div class="empty-state-text">
+                                      Select a quick action above or<br />
+                                      type a custom question to get started
+                                  </div>
+                              </div>
+                          `}
+                </div>
             </div>
         `;
-    }
-
-    private _renderFooter() {
-        return html`
-            <div class="chat-footer">
-                <button 
-                    class="clear-data-button" 
-                    title="Clear cached schematic data and re-initialize"
-                    ?disabled="${this._isLoading || this.streaming}">
-                    <kc-ui-icon>delete</kc-ui-icon> Clear Cache
-                </button>
-            </div>
-        `;
-    }
-
-    /**
-     * Clear all cached data (local and server) and re-initialize
-     */
-    private async _clearCache() {
-        if (this._isLoading || this.streaming) return;
-
-        const { repo, commit } = this._context;
-
-        this._isLoading = true;
-        this._responseContent = "Clearing cache...";
-        this._error = null;
-        this._selectedPreset = null;
-        this._customQuery = "";
-        this.update();
-
-        try {
-            // Clear both local and server-side cache
-            if (repo) {
-                await grokAPI.clearServerCache(repo, commit ?? undefined);
-            } else {
-                grokAPI.clearCache();
-            }
-
-            this._responseContent = "Cache cleared! Click a preset to re-analyze.";
-            this._isLoading = false;
-            this.update();
-
-            // Re-initialize repository
-            await this._initializeForAI();
-        } catch (err) {
-            console.error("[GrokChat] Failed to clear cache:", err);
-            this._isLoading = false;
-            this._error = err instanceof Error ? err.message : "Failed to clear cache";
-            this.update();
-        }
     }
 
     // =========================================================================
     // Main Render
     // =========================================================================
 
+    private _renderCollapsibleControls() {
+        return html`
+            <div class="controls-section ${this._controlsCollapsed ? 'collapsed' : ''}">
+                <button class="controls-toggle">
+                    <span class="toggle-icon">${this._controlsCollapsed ? '▶' : '▼'}</span>
+                    <span class="toggle-label">Quick Actions</span>
+                    ${this._selectedComponents.length > 0 
+                        ? html`<span class="selection-badge">${this._selectedComponents.length}</span>` 
+                        : null}
+                </button>
+                ${!this._controlsCollapsed ? html`
+                    <div class="controls-content">
+                        ${this._renderPresets()}
+                        ${this._renderSelectedComponents()}
+                        ${this._renderSearch()}
+                    </div>
+                ` : null}
+            </div>
+        `;
+    }
+
     override render() {
         return html`
             <div class="chat-container">
                 ${this._renderHeader()}
                 <div class="chat-body">
-                    ${this._renderPresets()} ${this._renderSelectedComponents()}
-                    ${this._renderSearch()} ${this._renderQueryInput()}
+                    ${this._renderCollapsibleControls()}
+                    ${this._renderQueryInput()}
                     ${this._renderResponse()}
                 </div>
-                ${this._renderFooter()}
             </div>
         `;
     }

@@ -23,6 +23,7 @@ import {
     getDateStamp,
     sanitizeFilename,
 } from "../../services/markdown";
+import { formatMarkdownToElement } from "../../services/markdown-formatter";
 
 type SearchState = "idle" | "loading" | "success" | "error" | "not_configured";
 type ReplacementState = "idle" | "loading" | "success" | "error";
@@ -949,99 +950,8 @@ export class KCSchematicDigiKeyPanelElement extends KCUIElement {
     }
 
     private format_analysis(text: string): HTMLElement {
-        // Create a container div
-        const container = document.createElement("div");
-
-        // Convert markdown-like text to HTML
-        let formatted = text;
-
-        // Handle headers (must do before other processing)
-        formatted = formatted
-            .replace(/^#### (.+)$/gm, '<h4 class="grok-h4">$1</h4>')
-            .replace(/^### (.+)$/gm, '<h3 class="grok-h3">$1</h3>')
-            .replace(/^## (.+)$/gm, '<h2 class="grok-h2">$1</h2>')
-            .replace(/^# (.+)$/gm, '<h1 class="grok-h1">$1</h1>');
-
-        // Handle bold
-        formatted = formatted.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-
-        // Handle citation-style links first: [[1]](url) -> superscript link
-        formatted = formatted.replace(
-            /\[\[(\d+)\]\]\(([^)]+)\)/g,
-            '<sup><a href="$2" target="_blank" rel="noopener noreferrer" class="citation-link">[$1]</a></sup>',
-        );
-
-        // Handle standard markdown links: [text](url)
-        formatted = formatted.replace(
-            /\[([^\]]+)\]\(([^)]+)\)/g,
-            '<a href="$2" target="_blank" rel="noopener noreferrer" class="grok-link">$1</a>',
-        );
-
-        // Handle plain URLs (but not already in href)
-        formatted = formatted.replace(
-            /(?<!href=")(https?:\/\/[^\s<>"]+)/g,
-            '<a href="$1" target="_blank" rel="noopener noreferrer" class="grok-link">$1</a>',
-        );
-
-        // Handle bullet points with proper list wrapping
-        const lines = formatted.split("\n");
-        let inList = false;
-        let listType = "";
-        const processedLines: string[] = [];
-
-        for (const line of lines) {
-            const bulletMatch = line.match(/^(\s*)- (.+)$/);
-            const numberMatch = line.match(/^(\s*)(\d+)\. (.+)$/);
-
-            if (bulletMatch) {
-                if (!inList || listType !== "ul") {
-                    if (inList) processedLines.push(`</${listType}>`);
-                    processedLines.push("<ul>");
-                    inList = true;
-                    listType = "ul";
-                }
-                processedLines.push(`<li>${bulletMatch[2]}</li>`);
-            } else if (numberMatch) {
-                if (!inList || listType !== "ol") {
-                    if (inList) processedLines.push(`</${listType}>`);
-                    processedLines.push("<ol>");
-                    inList = true;
-                    listType = "ol";
-                }
-                processedLines.push(`<li>${numberMatch[3]}</li>`);
-            } else {
-                if (inList) {
-                    processedLines.push(`</${listType}>`);
-                    inList = false;
-                    listType = "";
-                }
-                // Don't add <br> after headers or empty lines
-                if (
-                    line.trim() === "" ||
-                    line.includes("<h1") ||
-                    line.includes("<h2") ||
-                    line.includes("<h3") ||
-                    line.includes("<h4")
-                ) {
-                    processedLines.push(line);
-                } else {
-                    processedLines.push(line + "<br>");
-                }
-            }
-        }
-        if (inList) processedLines.push(`</${listType}>`);
-
-        formatted = processedLines.join("\n");
-
-        // Clean up extra <br> tags
-        formatted = formatted.replace(/<br>\s*<br>/g, "<br>");
-        formatted = formatted.replace(/<br>\s*<\/ul>/g, "</ul>");
-        formatted = formatted.replace(/<br>\s*<\/ol>/g, "</ol>");
-        formatted = formatted.replace(/<br>\s*<ul>/g, "<ul>");
-        formatted = formatted.replace(/<br>\s*<ol>/g, "<ol>");
-
-        container.innerHTML = formatted;
-        return container;
+        // Use shared markdown formatter with "grok" class prefix for compatibility
+        return formatMarkdownToElement(text, { classPrefix: "grok" });
     }
 
     private render_part_card(part: DigiKeyPartInfo) {
