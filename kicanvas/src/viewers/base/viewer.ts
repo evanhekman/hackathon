@@ -11,6 +11,7 @@ import { no_self_recursion } from "../../base/functions";
 import { BBox, Vec2 } from "../../base/math";
 import { Color, Polygon, Polyline, Renderer } from "../../graphics";
 import {
+    KiCanvasHoverEvent,
     KiCanvasLoadEvent,
     KiCanvasMouseMoveEvent,
     KiCanvasSelectEvent,
@@ -43,6 +44,11 @@ export abstract class Viewer extends EventTarget {
     // Multi-selection: items selected via zone or Command+click
     protected zone_selected_items: unknown[] = [];
     protected zone_selected_bboxes: BBox[] = [];
+
+    // Hover tracking
+    #hovered_item: unknown = null;
+    #last_screen_position: { x: number; y: number } = { x: 0, y: 0 };
+    #hover_check_pending = false;
 
     constructor(
         public canvas: HTMLCanvasElement,
@@ -162,9 +168,14 @@ export abstract class Viewer extends EventTarget {
 
     protected on_mouse_change(e: MouseEvent) {
         const rect = this.canvas.getBoundingClientRect();
+        const screenX = e.clientX;
+        const screenY = e.clientY;
         const new_position = this.viewport.camera.screen_to_world(
-            new Vec2(e.clientX - rect.left, e.clientY - rect.top),
+            new Vec2(screenX - rect.left, screenY - rect.top),
         );
+
+        // Store screen position for tooltip placement
+        this.#last_screen_position = { x: screenX, y: screenY };
 
         if (
             this.mouse_position.x != new_position.x ||
@@ -172,7 +183,67 @@ export abstract class Viewer extends EventTarget {
         ) {
             this.mouse_position.set(new_position);
             this.dispatchEvent(new KiCanvasMouseMoveEvent(this.mouse_position));
+
+            // Debounced hover detection for efficiency
+            this.schedule_hover_check();
         }
+    }
+
+    /**
+     * Schedule a hover check using requestAnimationFrame for smooth performance
+     */
+    protected schedule_hover_check() {
+        if (this.#hover_check_pending) {
+            return;
+        }
+
+        this.#hover_check_pending = true;
+        requestAnimationFrame(() => {
+            this.#hover_check_pending = false;
+            this.check_hover();
+        });
+    }
+
+    /**
+     * Check what item is under the cursor and emit hover event if changed
+     */
+    protected check_hover() {
+        if (!this.layers || this.zone_selection_active) {
+            return;
+        }
+
+        const items = this.layers.query_point(this.mouse_position);
+        let hovered_item: unknown = null;
+
+        // Get the first item at this position
+        for (const { layer: _layer, bbox } of items) {
+            const item = bbox.context;
+            if (item) {
+                hovered_item = item;
+                break;
+            }
+        }
+
+        // Only dispatch if the hovered item changed
+        if (hovered_item !== this.#hovered_item) {
+            this.#hovered_item = hovered_item;
+            this.dispatchEvent(
+                new KiCanvasHoverEvent({
+                    item: hovered_item,
+                    screenX: this.#last_screen_position.x,
+                    screenY: this.#last_screen_position.y,
+                    worldX: this.mouse_position.x,
+                    worldY: this.mouse_position.y,
+                }),
+            );
+        }
+    }
+
+    /**
+     * Get the currently hovered item
+     */
+    public get hovered_item(): unknown {
+        return this.#hovered_item;
     }
 
     public abstract load(src: any): Promise<void>;

@@ -44,6 +44,25 @@ export class KiCanvasMouseMoveEvent extends KiCanvasEvent<MouseMoveDetails> {
     }
 }
 
+export interface HoverDetails {
+    /** The item currently being hovered over (null if nothing) */
+    item: unknown;
+    /** Screen position for tooltip placement */
+    screenX: number;
+    screenY: number;
+    /** World position */
+    worldX: number;
+    worldY: number;
+}
+
+export class KiCanvasHoverEvent extends KiCanvasEvent<HoverDetails> {
+    static readonly type = "kicanvas:hover";
+
+    constructor(detail: HoverDetails) {
+        super(KiCanvasHoverEvent.type, detail, true);
+    }
+}
+
 interface ZoneSelectDetails {
     /** The items (symbols, wires, etc.) within the selected zone */
     items: unknown[];
@@ -81,6 +100,7 @@ export interface KiCanvasEventMap {
     [KiCanvasSelectEvent.type]: KiCanvasSelectEvent;
     [KiCanvasMouseMoveEvent.type]: KiCanvasMouseMoveEvent;
     [KiCanvasZoneSelectEvent.type]: KiCanvasZoneSelectEvent;
+    [KiCanvasHoverEvent.type]: KiCanvasHoverEvent;
 }
 
 declare global {
@@ -88,11 +108,13 @@ declare global {
         [KiCanvasLoadEvent.type]: KiCanvasLoadEvent;
         [KiCanvasSelectEvent.type]: KiCanvasSelectEvent;
         [KiCanvasZoneSelectEvent.type]: KiCanvasZoneSelectEvent;
+        [KiCanvasHoverEvent.type]: KiCanvasHoverEvent;
     }
 
     interface HTMLElementEventMap {
         [KiCanvasLoadEvent.type]: KiCanvasLoadEvent;
         [KiCanvasSelectEvent.type]: KiCanvasSelectEvent;
         [KiCanvasZoneSelectEvent.type]: KiCanvasZoneSelectEvent;
+        [KiCanvasHoverEvent.type]: KiCanvasHoverEvent;
     }
 }

@@ -7,6 +7,7 @@
 export * from "./activity-side-bar";
 export * from "./app";
 export * from "./button";
+export * from "./component-tooltip";
 export * from "./control-list";
 export * from "./dropdown";
 export * from "./element";

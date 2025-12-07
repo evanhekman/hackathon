@@ -55,6 +55,28 @@ export class KCSchematicPropertiesPanelElement extends KCUIElement {
                 ${desc ?? ""} ${suffix}
             </kc-ui-property-list-item>`;
 
+        const linkEntry = (name: string, url: string, label?: string) => {
+            const link = document.createElement("a");
+            link.href = url;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = label || url;
+            link.style.cssText = "color: #60a5fa; text-decoration: none;";
+            link.addEventListener("mouseenter", () => {
+                link.style.textDecoration = "underline";
+            });
+            link.addEventListener("mouseleave", () => {
+                link.style.textDecoration = "none";
+            });
+
+            return html`<kc-ui-property-list-item name="${name}">
+                ${link}
+            </kc-ui-property-list-item>`;
+        };
+
+        const isUrl = (text: string) =>
+            text && (text.startsWith("http://") || text.startsWith("https://"));
+
         const checkbox = (value?: boolean) =>
             value
                 ? html`<kc-ui-icon>check</kc-ui-icon>`
@@ -69,6 +91,12 @@ export class KCSchematicPropertiesPanelElement extends KCUIElement {
             const lib = item.lib_symbol;
 
             const properties = Array.from(item.properties.values()).map((v) => {
+                // Make URLs clickable (especially Datasheet)
+                if (v.text && isUrl(v.text)) {
+                    // For datasheet, show a friendly label
+                    const label = v.name === "Datasheet" ? "Open Datasheet ↗" : v.text;
+                    return linkEntry(v.name, v.text, label);
+                }
                 return entry(v.name, v.text);
             });
 
@@ -119,6 +147,10 @@ export class KCSchematicPropertiesPanelElement extends KCUIElement {
             `;
         } else if (item instanceof SchematicSheet) {
             const properties = Array.from(item.properties.values()).map((v) => {
+                // Make URLs clickable
+                if (v.text && isUrl(v.text)) {
+                    return linkEntry(v.name, v.text, v.text);
+                }
                 return entry(v.name, v.text);
             });
 
