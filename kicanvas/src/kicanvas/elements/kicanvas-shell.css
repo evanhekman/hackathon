@@ -303,6 +303,7 @@ section.overlay .feature {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 0.5em;
     padding: 1em 1.5em;
     background: rgba(255, 255, 255, 0.03);
@@ -311,6 +312,7 @@ section.overlay .feature {
     color: #aaaaaa;
     font-size: 0.95em;
     transition: all 0.3s ease;
+    min-height: 140px;
 }
 
 section.overlay .feature:hover {
@@ -324,6 +326,11 @@ section.overlay .feature-icon {
     font-size: 2em;
     line-height: 1;
     filter: grayscale(1) brightness(1.5);
+}
+
+/* Make emojis bigger */
+section.overlay span.feature-icon {
+    font-size: 3.6em;
 }
 
 section.overlay img.feature-icon {
