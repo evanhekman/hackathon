@@ -380,6 +380,8 @@ class PropertyPainter extends SchematicItemPainter {
         const parent = p.parent;
         const parent_is_symbol =
             parent instanceof schematic_items.SchematicSymbol;
+        const parent_is_sheet =
+            parent instanceof schematic_items.SchematicSheet;
         const transform = parent_is_symbol
             ? this.view_painter.current_symbol_transform
             : undefined;
@@ -387,14 +389,20 @@ class PropertyPainter extends SchematicItemPainter {
 
         let text = p.shown_text;
 
-        if (p.name == "Reference" && parent.unit) {
+        if (p.name == "Reference" && parent_is_symbol && parent.unit) {
             text += parent.unit_suffix;
         }
 
+        // Fallback positioning if parent lacks an 'at' (e.g., LibSymbol previews)
+        const parentPos =
+            parent_is_symbol || parent_is_sheet
+                ? parent.at.position
+                : p.at.position;
+
         const schfield = new SchField(text, {
-            position: parent.at.position.multiply(10000),
+            position: parentPos.multiply(10000),
             transform: matrix,
-            is_symbol: parent instanceof schematic_items.SchematicSymbol,
+            is_symbol: parent_is_symbol,
         });
 
         schfield.apply_effects(p.effects);
