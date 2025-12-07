@@ -12,15 +12,10 @@ use tracing::{error, info};
 
 use crate::services::{distill, git};
 use crate::types::{
-<<<<<<< HEAD
     ApiError, GrokCommitSummaryRequest, GrokCommitSummaryResponse,
     GrokObsoleteReplacementRequest, GrokObsoleteReplacementResponse,
-    GrokRepoSummaryRequest, GrokRepoSummaryResponse, GrokSelectionSummaryRequest,
-=======
-    ApiError, GrokCommitSummaryRequest, GrokCommitSummaryResponse, GrokRepoSummaryRequest,
-    GrokRepoSummaryResponse, GrokSelectionStreamRequest, GrokSelectionSummaryRequest,
->>>>>>> 450b292 (sidebar)
-    GrokSelectionSummaryResponse,
+    GrokRepoSummaryRequest, GrokRepoSummaryResponse, GrokSelectionStreamRequest,
+    GrokSelectionSummaryRequest, GrokSelectionSummaryResponse,
 };
 // use kicad_db::PgPool;
 use kicad_db::{
