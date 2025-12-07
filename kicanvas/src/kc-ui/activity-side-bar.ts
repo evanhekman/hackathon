@@ -119,7 +119,7 @@ export class KCUIActivitySideBarElement extends KCUIElement {
                 html`
                     <kc-ui-button
                         type="button"
-                        tooltip-left="${name}"
+                        tooltip-right="${name}"
                         name="${name?.toLowerCase()}"
                         title="${name}"
                         icon=${icon}>

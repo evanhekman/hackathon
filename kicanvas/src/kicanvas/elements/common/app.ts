@@ -237,10 +237,10 @@ export abstract class KCViewerAppElement<
         }
 
         return html`<kc-ui-split-view vertical>
+            ${this.#activity_bar} ${resizer}
             <kc-ui-view class="grow">
                 ${top_toolbar} ${this.#viewer_elm} ${bottom_toolbar}
             </kc-ui-view>
-            ${resizer} ${this.#activity_bar}
         </kc-ui-split-view>`;
     }
 

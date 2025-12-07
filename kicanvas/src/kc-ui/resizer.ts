@@ -11,7 +11,7 @@ import { KCUIElement } from "./element";
 /**
  * kc-ui-resizer allow re-sizing a kc-ui-view with the mouse.
  *
- * Presently it's only able to resize the element to its immediate right.
+ * Presently it's only able to resize the element to its immediate left.
  */
 export class KCUIResizerElement extends KCUIElement {
     static override styles = [
@@ -22,7 +22,7 @@ export class KCUIResizerElement extends KCUIElement {
                 user-select: none;
                 display: block;
                 width: 6px;
-                margin-left: -6px;
+                margin-right: -6px;
                 cursor: col-resize;
                 background: transparent;
                 opacity: 0;
@@ -48,7 +48,7 @@ export class KCUIResizerElement extends KCUIElement {
 
         this.addEventListener("mousedown", (e) => {
             const mouse_x = e.clientX;
-            const width = next.getBoundingClientRect().width;
+            const width = prev.getBoundingClientRect().width;
 
             // prevent cursor flashing
             document.body.style.cursor = "col-resize";
@@ -59,23 +59,23 @@ export class KCUIResizerElement extends KCUIElement {
             next.style.pointerEvents = "none";
             next.style.userSelect = "none";
 
-            next.style.width = `${width}px`;
-            next.style.maxWidth = "unset";
+            prev.style.width = `${width}px`;
+            prev.style.maxWidth = "unset";
 
             this.classList.add("active");
 
             // If the element we're resizing is collapsed, un-collapse it.
-            if (next.hasAttribute("collapsed")) {
+            if (prev.hasAttribute("collapsed")) {
                 console.log("removing collapsed");
-                next.removeAttribute("collapsed");
+                prev.removeAttribute("collapsed");
             }
 
             const mouse_move = (e: MouseEvent) => {
-                const dx = mouse_x - e.clientX;
+                const dx = e.clientX - mouse_x;
                 const new_width =
                     ((width + dx) * 100) /
                     this.parentElement!.getBoundingClientRect().width;
-                next.style.width = `${new_width}%`;
+                prev.style.width = `${new_width}%`;
             };
 
             const mouse_move_listener = this.addDisposable(
