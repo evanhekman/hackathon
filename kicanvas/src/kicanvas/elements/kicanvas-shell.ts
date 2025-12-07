@@ -305,10 +305,6 @@ class KiCanvasShellElement extends KCUIElement {
                         autofocus />
                     <div class="error-bar">${this.error}</div>
                     <p class="drop-hint">or drag & drop your KiCAD files</p>
-                    <p class="note">
-                        Your files are processed locally in your browser.
-                        Nothing ever leaves your machine.
-                    </p>
                 </section>
                 <section class="loading-overlay">
                     <div class="hero-glow"></div>
