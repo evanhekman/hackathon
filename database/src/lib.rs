@@ -5,6 +5,8 @@ use sqlx::{PgPool, Row, Error};
 use serde_json::Value;
 use std::collections::HashMap;
 
+pub mod utilities;
+
 pub const DB_URL: &str = "postgres://kicad:password@localhost:5432/kicad";
 
 #[derive(Serialize, Deserialize, Debug, Clone, sqlx::FromRow)]
