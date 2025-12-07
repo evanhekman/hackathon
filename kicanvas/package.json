@@ -7,7 +7,7 @@
         "test": "tests"
     },
     "devDependencies": {
-        "wrangler": "^3.114.0",
+        "wrangler": "^4.53.0",
         "@esm-bundle/chai": "^4.3.4-fix.0",
         "@open-wc/semantic-dom-diff": "^0.20.1",
         "@types/mocha": "^10.0.4",
