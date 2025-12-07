@@ -164,8 +164,6 @@ export const bodyStyles = css`
     }
 
     .controls-content {
-        max-height: 280px;
-        overflow-y: auto;
         overflow-x: hidden;
     }
 
