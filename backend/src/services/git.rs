@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use chrono::{DateTime, TimeZone, Utc};
 use git2::{build::RepoBuilder, ObjectType, Repository};
 use std::path::PathBuf;
-use tracing::info;
+use tracing::{info, warn};
 
 use crate::types::{CommitInfo, SchematicFile};
 
@@ -11,10 +11,40 @@ fn get_cache_path(repo_slug: &str) -> PathBuf {
     std::env::temp_dir().join(format!("kicad-cache-{}", repo_slug.replace('/', "-")))
 }
 
+/// Invalidate (delete) the cache for a repository
+/// Call this when you know there are new commits (e.g., from a webhook)
+pub async fn invalidate_cache(repo_slug: &str) -> Result<()> {
+    let cache_path = get_cache_path(repo_slug);
+    if cache_path.exists() {
+        tokio::fs::remove_dir_all(&cache_path).await?;
+        info!(
+            "Invalidated cache for repo {} at {:?}",
+            repo_slug, cache_path
+        );
+    }
+    Ok(())
+}
+
 /// Clone or fetch a repository, returning a handle to it
+/// If force_fresh is true, deletes any existing cache first
 pub async fn get_repo(repo_slug: &str) -> Result<Repository> {
+    get_repo_with_options(repo_slug, false).await
+}
+
+/// Clone or fetch a repository with options
+/// If force_fresh is true, deletes any existing cache first
+pub async fn get_repo_with_options(repo_slug: &str, force_fresh: bool) -> Result<Repository> {
     let repo_slug = repo_slug.to_string();
     let cache_path = get_cache_path(&repo_slug);
+
+    // If force_fresh, delete the cache first
+    if force_fresh && cache_path.exists() {
+        tokio::fs::remove_dir_all(&cache_path).await?;
+        info!(
+            "Force-deleted cache for repo {} at {:?}",
+            repo_slug, cache_path
+        );
+    }
 
     tokio::task::spawn_blocking(move || -> Result<Repository> {
         if !cache_path.exists() {
@@ -27,17 +57,43 @@ pub async fn get_repo(repo_slug: &str) -> Result<Repository> {
         } else {
             let repo = Repository::open(&cache_path).context("Failed to open cached repository")?;
             // Fetch updates
-            let mut remote = repo.find_remote("origin").or_else(|_| {
-                let url = format!("https://github.com/{}.git", repo_slug);
-                repo.remote("origin", &url)
-            })?;
-            remote.fetch(&["refs/heads/*:refs/remotes/origin/*"], None, None)?;
-            drop(remote);
-            info!("Updated repo {} from cache {:?}", repo_slug, cache_path);
+            {
+                let mut remote = repo.find_remote("origin").or_else(|_| {
+                    let url = format!("https://github.com/{}.git", repo_slug);
+                    repo.remote("origin", &url)
+                })?;
+                remote.fetch(&["refs/heads/*:refs/remotes/origin/*"], None, None)?;
+            }
+
+            // Update local HEAD to match remote's default branch
+            // First, find the remote HEAD (origin/HEAD or origin/main or origin/master)
+            let remote_commit_id = {
+                let remote_head = repo
+                    .find_reference("refs/remotes/origin/HEAD")
+                    .or_else(|_| repo.find_reference("refs/remotes/origin/main"))
+                    .or_else(|_| repo.find_reference("refs/remotes/origin/master"))
+                    .context("Failed to find remote HEAD")?;
+                remote_head.peel_to_commit()?.id()
+            };
+
+            // Reset HEAD to point to the remote commit
+            repo.set_head_detached(remote_commit_id)?;
+            info!(
+                "Updated repo {} from cache {:?}, HEAD now at {}",
+                repo_slug,
+                cache_path,
+                &remote_commit_id.to_string()[..8]
+            );
+
             Ok(repo)
         }
     })
     .await?
+}
+
+/// Get a repo with a forced fresh clone (for webhook use)
+pub async fn get_repo_fresh(repo_slug: &str) -> Result<Repository> {
+    get_repo_with_options(repo_slug, true).await
 }
 
 /// Get all commits that modify .kicad_sch files

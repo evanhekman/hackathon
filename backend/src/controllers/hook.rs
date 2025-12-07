@@ -3,6 +3,7 @@ use axum::{
     http::StatusCode,
     response::Json,
 };
+use serde::Deserialize;
 use std::collections::HashMap;
 use std::sync::Arc;
 use tracing::{error, info, warn};
@@ -13,7 +14,100 @@ use kicad_db::{retrieve_schematic, store_schematic, PgPool};
 
 pub type AppState = Arc<PgPool>;
 
+/// GitHub webhook push event payload (simplified)
+#[derive(Debug, Deserialize)]
+pub struct GitHubPushEvent {
+    #[serde(rename = "ref")]
+    pub git_ref: Option<String>,
+    pub repository: Option<GitHubRepository>,
+    pub commits: Option<Vec<GitHubCommit>>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GitHubRepository {
+    pub full_name: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GitHubCommit {
+    pub id: Option<String>,
+    pub message: Option<String>,
+}
+
+/// GitHub webhook endpoint - receives push events from GitHub
+/// This forces a fresh clone to ensure we have the latest commits
+#[utoipa::path(
+    post,
+    path = "/api/hook/github/{repo}",
+    params(
+        ("repo" = String, Path, description = "GitHub repository in owner/repo format")
+    ),
+    responses(
+        (status = 200, description = "Webhook processed successfully", body = HookUpdateResponse),
+        (status = 500, description = "Internal server error", body = ApiError)
+    ),
+    tag = "hook"
+)]
+pub async fn github_webhook(
+    State(state): State<AppState>,
+    Path(repo): Path<String>,
+    Json(payload): Json<GitHubPushEvent>,
+) -> Result<Json<HookUpdateResponse>, (StatusCode, Json<ApiError>)> {
+    let repo = repo.trim_start_matches('/').to_string();
+
+    info!("Received GitHub webhook for repo: {}", repo);
+    if let Some(commits) = &payload.commits {
+        info!("Webhook contains {} commits", commits.len());
+        for commit in commits {
+            info!(
+                "  Commit: {} - {:?}",
+                commit.id.as_deref().unwrap_or("unknown"),
+                commit.message
+            );
+        }
+    }
+
+    // Invalidate cache to force fresh clone
+    if let Err(e) = git::invalidate_cache(&repo).await {
+        warn!("Failed to invalidate cache for {}: {}", repo, e);
+    }
+
+    // Now process with fresh data
+    process_repo_internal(state, repo).await
+}
+
+/// Refresh a repository - forces a fresh clone and reprocesses
+#[utoipa::path(
+    post,
+    path = "/api/hook/refresh/{repo}",
+    params(
+        ("repo" = String, Path, description = "GitHub repository in owner/repo format")
+    ),
+    responses(
+        (status = 200, description = "Repository refreshed successfully", body = HookUpdateResponse),
+        (status = 500, description = "Internal server error", body = ApiError)
+    ),
+    tag = "hook"
+)]
+pub async fn refresh_repo(
+    State(state): State<AppState>,
+    Path(repo): Path<String>,
+) -> Result<Json<HookUpdateResponse>, (StatusCode, Json<ApiError>)> {
+    let repo = repo.trim_start_matches('/').to_string();
+
+    info!("Refresh requested for repo: {}", repo);
+
+    // Invalidate cache to force fresh clone
+    if let Err(e) = git::invalidate_cache(&repo).await {
+        warn!("Failed to invalidate cache for {}: {}", repo, e);
+    }
+
+    // Now process with fresh data
+    process_repo_internal(state, repo).await
+}
+
 /// Process a repository and generate overviews for commits missing them
+/// Uses cached repo - for manual triggering when you know cache is fresh
 #[utoipa::path(
     post,
     path = "/api/hook/update/{repo}",
@@ -31,9 +125,16 @@ pub async fn update_repo(
     Path(repo): Path<String>,
 ) -> Result<Json<HookUpdateResponse>, (StatusCode, Json<ApiError>)> {
     let repo = repo.trim_start_matches('/').to_string();
-    let repo_url = format!("https://github.com/{}.git", repo);
-
     info!("Processing update hook for repo: {}", repo);
+    process_repo_internal(state, repo).await
+}
+
+/// Internal function to process a repository
+async fn process_repo_internal(
+    state: AppState,
+    repo: String,
+) -> Result<Json<HookUpdateResponse>, (StatusCode, Json<ApiError>)> {
+    let repo_url = format!("https://github.com/{}.git", repo);
 
     // Get all commits with schematic changes
     let commits = git::get_schematic_commits(&repo).await.map_err(|e| {

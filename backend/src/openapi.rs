@@ -21,6 +21,8 @@ use crate::types::{
         repo::get_commit_files,
         repo::get_commit_info,
         hook::update_repo,
+        hook::refresh_repo,
+        hook::github_webhook,
         grok::summarize_commit,
         grok::summarize_selection,
         grok::summarize_repo,
