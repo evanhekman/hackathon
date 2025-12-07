@@ -20,3 +20,6 @@ uuid = { version = "1.10", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 anyhow = "1.0"
 tempfile = "3"
+futures-util = "0.3"
+tokio-stream = "0.1"
+async-stream = "0.3"

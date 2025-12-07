@@ -1,9 +1,12 @@
 // USAGE:
 // $ cargo test xai_client -- --nocapture
 use crate::messages::ChatCompletionRequest;
-use crate::utilities::load_environment_file::{get_environment_variable, load_environment_file};
+use crate::utilities::load_environment_file::get_environment_variable;
+use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
+use std::pin::Pin;
 use std::time::Duration;
+use tracing::warn;
 
 /// Default XAI API base URL
 pub const DEFAULT_XAI_API_URL: &str = "https://api.x.ai/v1/chat/completions";
@@ -27,6 +30,13 @@ pub struct Choice {
     pub index: Option<u32>,
     pub message: Option<MessageResponse>,
     pub finish_reason: Option<String>,
+    pub delta: Option<StreamDelta>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct StreamDelta {
+    pub role: Option<String>,
+    pub content: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -41,6 +51,28 @@ pub struct Usage {
     pub completion_tokens: Option<u32>,
     pub total_tokens: Option<u32>,
 }
+
+/// Streaming chunk from XAI API
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct StreamChunk {
+    pub id: Option<String>,
+    pub object: Option<String>,
+    pub created: Option<u64>,
+    pub model: Option<String>,
+    pub choices: Vec<StreamChoice>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct StreamChoice {
+    pub index: Option<u32>,
+    pub delta: Option<StreamDelta>,
+    pub finish_reason: Option<String>,
+}
+
+/// Stream type for chat completion responses
+pub type ChatCompletionStream = Pin<
+    Box<dyn futures_util::Stream<Item = Result<String, Box<dyn std::error::Error + Send + Sync>>> + Send>,
+>;
 
 /// XAI API client for making chat completion requests
 #[derive(Debug, Clone)]
@@ -125,12 +157,109 @@ impl XaiClient {
     pub fn timeout(&self) -> Duration {
         self.timeout
     }
+
+    /// Make a streaming chat completion request
+    /// Returns a stream of content strings as they arrive
+    pub async fn chat_completion_stream(
+        &self,
+        request: &ChatCompletionRequest,
+    ) -> Result<ChatCompletionStream, Box<dyn std::error::Error + Send + Sync>> {
+        let client = reqwest::Client::builder().timeout(self.timeout).build()?;
+
+        // Ensure stream is enabled
+        let mut stream_request = request.clone();
+        stream_request.stream = Some(true);
+
+        let response = client
+            .post(&self.base_url)
+            .header("Content-Type", "application/json")
+            .header("Authorization", format!("Bearer {}", self.api_key))
+            .json(&stream_request)
+            .send()
+            .await?;
+
+        if !response.status().is_success() {
+            let status = response.status();
+            let error_text = response
+                .text()
+                .await
+                .unwrap_or_else(|_| "Unknown error".to_string());
+
+            if status.as_u16() == 429 {
+                return Err(format!(
+                    "RATE LIMITED: XAI API returned 429. Response: {}",
+                    error_text
+                )
+                .into());
+            }
+
+            return Err(
+                format!("API request failed with status {}: {}", status, error_text).into(),
+            );
+        }
+
+        let byte_stream = response.bytes_stream();
+
+        let stream = async_stream::stream! {
+            let mut buffer = String::new();
+
+            tokio::pin!(byte_stream);
+
+            while let Some(chunk_result) = byte_stream.next().await {
+                match chunk_result {
+                    Ok(bytes) => {
+                        buffer.push_str(&String::from_utf8_lossy(&bytes));
+
+                        // Process complete SSE lines
+                        while let Some(line_end) = buffer.find('\n') {
+                            let line = buffer[..line_end].trim().to_string();
+                            buffer = buffer[line_end + 1..].to_string();
+
+                            if line.is_empty() {
+                                continue;
+                            }
+
+                            if line.starts_with("data: ") {
+                                let data = &line[6..];
+
+                                if data == "[DONE]" {
+                                    return;
+                                }
+
+                                match serde_json::from_str::<StreamChunk>(data) {
+                                    Ok(chunk) => {
+                                        if let Some(choice) = chunk.choices.first() {
+                                            if let Some(delta) = &choice.delta {
+                                                if let Some(content) = &delta.content {
+                                                    yield Ok(content.clone());
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Err(e) => {
+                                        warn!("Failed to parse stream chunk: {} - data: {}", e, data);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        yield Err(Box::new(e) as Box<dyn std::error::Error + Send + Sync>);
+                        return;
+                    }
+                }
+            }
+        };
+
+        Ok(Box::pin(stream))
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::messages::Message;
+    use crate::utilities::load_environment_file::load_environment_file;
 
     #[tokio::test]
     async fn test_xai_client_creation() {

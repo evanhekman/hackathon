@@ -26,6 +26,7 @@ import "./preferences-panel";
 import "./project-panel";
 import "./viewer-bottom-toolbar";
 import "./grok-button";
+import "./grok-chat-panel";
 
 interface ViewerElement extends HTMLElement {
     viewer: Viewer;

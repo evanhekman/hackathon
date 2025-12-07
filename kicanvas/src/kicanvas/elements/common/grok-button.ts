@@ -12,6 +12,8 @@ import {
     type ZoneConnection,
 } from "../../../viewers/base/events";
 import type { Viewer } from "../../../viewers/base/viewer";
+import "./grok-chat-panel";
+import type { KCGrokChatPanelElement } from "./grok-chat-panel";
 
 /** Item with a uuid property */
 interface UuidItem {
@@ -185,6 +187,22 @@ export class KCGrokButtonElement extends KCUIElement {
             .grok-button:hover + .tooltip {
                 opacity: 1;
             }
+
+            /* Disabled state when no selection */
+            :host(:not([has-selection])) .grok-button {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+            :host(:not([has-selection])) .grok-button:hover {
+                transform: none;
+                background: rgba(10, 10, 10, 0.9);
+                border-color: rgba(255, 255, 255, 0.15);
+            }
+
+            :host(:not([has-selection])) .grok-button:active {
+                transform: none;
+            }
         `,
     ];
 
@@ -259,6 +277,14 @@ export class KCGrokButtonElement extends KCUIElement {
         } else {
             this.removeAttribute("has-selection");
         }
+        
+        // Update tooltip text
+        const tooltip = this.renderRoot.querySelector(".tooltip");
+        if (tooltip) {
+            tooltip.textContent = this.#hasSelection 
+                ? "Ask Grok AI about selection" 
+                : "Select components to ask Grok";
+        }
     }
 
     #buildPayload(): GrokPayload {
@@ -290,15 +316,38 @@ export class KCGrokButtonElement extends KCUIElement {
     }
 
     #onClick() {
+        // Don't proceed if no selection
+        if (!this.#hasSelection) {
+            console.log("Grok button clicked but no selection - ignoring");
+            return;
+        }
+
         const payload = this.#buildPayload();
 
-        // Log the payload to console (for now, instead of API call)
+        // Log the payload to console
         console.log("=== GROK BUTTON CLICKED ===");
         console.log("Selected Items Count:", payload.selectedItems.length);
         console.log("Selected Item UIDs:", payload.selectedItems.map((i) => i.uuid));
         console.log("Full Payload:", payload);
         console.log("JSON Payload:", JSON.stringify(payload, null, 2));
         console.log("===========================");
+
+        // Find or create chat panel
+        let chatPanel = document.querySelector("kc-grok-chat-panel") as KCGrokChatPanelElement | null;
+        
+        if (!chatPanel) {
+            // Use innerHTML to ensure proper custom element upgrade
+            const container = document.createElement("div");
+            container.innerHTML = "<kc-grok-chat-panel></kc-grok-chat-panel>";
+            chatPanel = container.firstElementChild as KCGrokChatPanelElement;
+            document.body.appendChild(chatPanel);
+            // Wait for initialContentCallback to complete before showing
+            // The base CustomElement runs it in an async IIFE, resolved after rAF
+            requestAnimationFrame(() => chatPanel!.show());
+        } else {
+            // Panel already exists and is initialized, show immediately
+            chatPanel.show();
+        }
 
         // Dispatch event with payload for external consumers
         this.dispatchEvent(
@@ -318,7 +367,7 @@ export class KCGrokButtonElement extends KCUIElement {
             <button class="grok-button">
                 <img class="logo" src="${this.src}" alt="Grok AI" />
             </button>
-            <div class="tooltip">Ask Grok AI</div>
+            <div class="tooltip">Select components to ask Grok</div>
         `;
     }
 }

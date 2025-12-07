@@ -1,5 +1,13 @@
-use axum::{extract::State, http::StatusCode, response::Json};
-use std::sync::Arc;
+use axum::{
+    extract::State,
+    http::StatusCode,
+    response::{
+        sse::{Event, Sse},
+        Json,
+    },
+};
+use futures_util::{stream::Stream, StreamExt};
+use std::{convert::Infallible, sync::Arc, time::Duration};
 use tracing::{error, info};
 
 use crate::services::git;
@@ -268,4 +276,103 @@ pub async fn summarize_repo(
         summary,
         details,
     }))
+}
+
+/// Stream an AI chat response using Server-Sent Events
+#[utoipa::path(
+    get,
+    path = "/api/grok/chat/stream",
+    responses(
+        (status = 200, description = "Streaming AI chat response via SSE"),
+        (status = 500, description = "Internal server error", body = ApiError)
+    ),
+    tag = "grok"
+)]
+pub async fn chat_stream(
+    State(_state): State<AppState>,
+) -> Result<Sse<impl Stream<Item = Result<Event, Infallible>>>, (StatusCode, Json<ApiError>)> {
+    info!("Grok chat_stream called");
+
+    // Load environment file to get XAI_API_KEY
+    load_environment_file(None).map_err(|e| {
+        error!("Failed to load environment file: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ApiError::internal(format!(
+                "Failed to load environment: {}",
+                e
+            ))),
+        )
+    })?;
+
+    // Create XAI client
+    let xai_client = XaiClient::new().map_err(|e| {
+        error!("Failed to create XAI client: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ApiError::internal(format!(
+                "Failed to initialize XAI client: {}",
+                e
+            ))),
+        )
+    })?;
+
+    // TODO: Accept messages from request body. Currently using static prompts for testing.
+    // This endpoint should be converted to POST with a request body containing the user's
+    // selection context and question. For now, we use a hardcoded prompt to verify streaming works.
+    let messages = vec![
+        Message::system(
+            "You are Grok, an expert AI assistant specialized in electronics and PCB design. \
+            You help users understand KiCad schematics, components, and circuit design. \
+            Be concise but informative. Use technical terms when appropriate.".to_string()
+        ),
+        Message::user(
+            "Give me a brief overview of what to look for when reviewing a KiCad schematic for an embedded system.".to_string()
+        ),
+    ];
+
+    // Create chat completion request with streaming
+    let chat_request = ChatCompletionRequest::with_stream(messages, "grok-3-fast".to_string(), true);
+
+    // Get the stream
+    let stream = xai_client
+        .chat_completion_stream(&chat_request)
+        .await
+        .map_err(|e| {
+            error!("Failed to create XAI stream: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(ApiError::internal(format!(
+                    "Failed to start AI stream: {}",
+                    e
+                ))),
+            )
+        })?;
+
+    // Convert the stream to SSE events
+    let sse_stream = async_stream::stream! {
+        tokio::pin!(stream);
+
+        while let Some(result) = stream.next().await {
+            match result {
+                Ok(content) => {
+                    yield Ok(Event::default().data(content));
+                }
+                Err(e) => {
+                    error!("Stream error: {}", e);
+                    yield Ok(Event::default().data(format!("[ERROR: {}]", e)));
+                    break;
+                }
+            }
+        }
+
+        // Send a done event
+        yield Ok(Event::default().data("[DONE]"));
+    };
+
+    Ok(Sse::new(sse_stream).keep_alive(
+        axum::response::sse::KeepAlive::new()
+            .interval(Duration::from_secs(15))
+            .text("keep-alive"),
+    ))
 }

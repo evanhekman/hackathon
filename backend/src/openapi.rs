@@ -26,6 +26,7 @@ use crate::types::{
         grok::summarize_commit,
         grok::summarize_selection,
         grok::summarize_repo,
+        grok::chat_stream,
     ),
     components(schemas(
         RepoCommitsRequest,
