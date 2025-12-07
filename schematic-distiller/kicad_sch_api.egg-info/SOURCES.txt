@@ -4,16 +4,6 @@ LICENSE
 MANIFEST.in
 README.md
 pyproject.toml
-.claude/commands/dev/dead-code-analysis.md
-.claude/commands/dev/dev.md
-.claude/commands/dev/publish-pypi.md
-.claude/commands/dev/review-implementation.md
-.claude/commands/dev/run-tests.md
-.claude/commands/dev/update-and-commit.md
-.claude/commands/test/run-reference-tests.md
-.claude/commands/user/create-schematic.md
-.claude/commands/user/generate-circuit.md
-.claude/commands/user/troubleshoot-library.md
 examples/COMBINED.py
 examples/DEMO_ALL_CIRCUITS_README.md
 examples/README.md

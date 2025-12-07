@@ -50,3 +50,5 @@ dist/
 /schematic-distiller/agents
 *.zip
 *.lock
+/schematic-distiller/\#
+/schematic-distiller/create
